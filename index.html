@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>언폴드엑스 2026 테크라이더</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Layout: 비교표(메인) → 공연·리허설 일정 → 작가별 상세(그림·신호·체크·진행, 공통 포함) → 기타(접힘) */
+:root{
+  --bg:#eef1f3; --panel:#ffffff; --ink:#15212b; --muted:#5f6d78; --line:#d6dde2; --soft:#e8ecef;
+  --accent:#d98a00; --accent-ink:#7a4d00; --accent-soft:#fdf0d6;
+  --ok:#1f8a5b; --ok-soft:#ddf3e8; --wip:#2f6fb5; --wip-soft:#e0ecf9;
+  --todo:#b9480f; --todo-soft:#fbe9df; --info:#6b7680; --info-soft:#eceff2;
+  --sans:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --panel:#17212a; --ink:#e6edf2; --muted:#9aa8b3; --line:#2a3743; --soft:#1f2b35;
+  --accent:#f0a826; --accent-ink:#f6c86e; --accent-soft:#3a2c10;
+  --ok:#4cc38a; --ok-soft:#163327; --wip:#6aa6e8; --wip-soft:#172a40;
+  --todo:#f08a5d; --todo-soft:#3a2117; --info:#9aa6b0; --info-soft:#232e38; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --panel:#17212a; --ink:#e6edf2; --muted:#9aa8b3; --line:#2a3743; --soft:#1f2b35;
+  --accent:#f0a826; --accent-ink:#f6c86e; --accent-soft:#3a2c10;
+  --ok:#4cc38a; --ok-soft:#163327; --wip:#6aa6e8; --wip-soft:#172a40;
+  --todo:#f08a5d; --todo-soft:#3a2117; --info:#9aa6b0; --info-soft:#232e38; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.3}
+a{color:var(--wip)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+summary{list-style:none;cursor:pointer}
+summary::-webkit-details-marker{display:none}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.label{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+
+header.top{padding:32px 0 6px;display:flex;flex-direction:column;gap:10px}
+.title-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.title-row h1{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700}
+.title-row h1 span{color:var(--accent-ink)}
+.stamp{font-family:var(--mono);font-size:.75rem;color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px;background:var(--panel)}
+.howto{margin:0;color:var(--muted);font-size:.88rem;max-width:62ch}
+
+/* 공연 한눈에 */
+.arts{display:flex;flex-direction:column;gap:10px}
+.arts>.sub{border-radius:10px}
+.arts>.sub>summary{padding:18px 20px}
+.arts>.sub .t{font-size:1.2rem}
+.arts>.sub .t .w{font-size:.95rem}
+.arts>.sub .t .d{font-size:.78rem;margin-top:3px}
+.shows{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.shows h2{font-size:1rem;padding:14px 18px 10px}
+.srow{display:grid;grid-template-columns:96px minmax(0,1fr) minmax(0,1fr);gap:12px;padding:10px 18px;border-top:1px solid var(--soft);align-items:baseline}
+.srow .d{font-family:var(--mono);font-size:.8rem;color:var(--accent-ink);font-weight:600}
+.srow .w{font-weight:600}
+.srow .w small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+.srow .r{font-size:.82rem;color:var(--muted)}
+@media (max-width:620px){.srow{grid-template-columns:1fr;gap:2px}}
+
+/* big toggles */
+.group-title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:14px}
+.group-title h2{font-size:1.15rem}
+.group-title p{margin:0;color:var(--muted);font-size:.82rem}
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px;align-items:start}
+details.big{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.big>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:16px 18px;align-items:center}
+.big>summary:hover{background:var(--soft)}
+.big .bt{font-size:1.08rem;font-weight:700}
+.big .bs{grid-column:1/-1;font-size:.8rem;color:var(--muted)}
+.big .count{font-family:var(--mono);font-size:1.5rem;font-weight:600;color:var(--todo);line-height:1}
+.big .count small{font-family:var(--sans);font-size:.72rem;color:var(--muted);font-weight:500;margin-left:4px}
+.big[open]{grid-column:1/-1}
+.big[open]>summary{border-bottom:1px solid var(--line)}
+.big-b{padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap;line-height:1.7}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-todo{color:var(--todo);background:var(--todo-soft)} .p-wip{color:var(--wip);background:var(--wip-soft)}
+.p-ok{color:var(--ok);background:var(--ok-soft)} .p-info{color:var(--info);background:var(--info-soft)}
+
+/* rows */
+.list{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.row{border-bottom:1px solid var(--soft)}
+.row:last-child{border-bottom:0}
+.row>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 14px}
+.row>summary:hover{background:var(--soft)}
+.row .short{font-weight:500}
+.row .who{display:inline-block;font-size:.7rem;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-radius:3px;padding:0 6px;margin-right:6px}
+.row .src{font-family:var(--mono);font-size:.68rem;color:var(--muted);white-space:nowrap}
+.row .src::after{content:" ▸";color:var(--line)}
+.row[open] .src::after{content:" ▾"}
+.row .more{padding:0 14px 12px;font-size:.86rem;display:flex;flex-direction:column;gap:4px}
+.row .more div{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px}
+.row .more b{font-weight:600;color:var(--muted);font-size:.74rem;padding-top:2px}
+@media (max-width:620px){.row .src{display:none}}
+
+/* section toggles */
+details.sect{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.sect>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 16px;align-items:center;gap:12px;padding:16px 18px}
+.sect>summary:hover{background:var(--soft)}
+.sect .st{font-size:1.08rem;font-weight:700}
+.sect .st small{display:block;font-weight:400;font-size:.8rem;color:var(--muted);margin-top:1px}
+.car{color:var(--muted);transition:transform .15s}
+details[open]>summary .car{transform:rotate(90deg)}
+.sect[open]>summary{border-bottom:1px solid var(--line)}
+.sect-b{padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px}
+details.sub{border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden}
+.sub>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 14px;gap:10px;align-items:center;padding:12px 14px}
+.sub>summary:hover{background:var(--soft)}
+.sub .t{font-weight:700}
+.sub .t .w{font-weight:500;color:var(--accent-ink);font-size:.86rem;margin-left:6px}
+.sub .t .d{display:block;font-family:var(--mono);font-size:.72rem;color:var(--muted);font-weight:400;margin-top:1px}
+.sub[open]>summary{border-bottom:1px solid var(--soft)}
+.sub-b{display:flex;flex-direction:column}
+.sub-b>.list{border:0;border-radius:0}
+.meta{padding:10px 14px;font-size:.8rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 16px;border-bottom:1px solid var(--soft)}
+.meta b{color:var(--ink);font-weight:600}
+.flow{padding:10px 14px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--soft);background:var(--bg)}
+.flow-row{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font-size:.76rem}
+.flow-row .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--muted);width:44px}
+.node{border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:2px 8px}
+.node.art{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+.node.flag{border-color:var(--todo);color:var(--todo);background:var(--todo-soft)}
+.arrow{color:var(--muted)}
+.done>summary{padding:9px 14px;font-size:.8rem;color:var(--muted);border-top:1px solid var(--soft)}
+.done>summary:hover{background:var(--soft)}
+.done .list{border:0;border-radius:0;border-top:1px solid var(--soft)}
+
+/* gantt */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.gantt{display:grid;grid-template-columns:132px repeat(10,minmax(72px,1fr));min-width:880px;font-size:.76rem}
+.gh{padding:7px 6px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.7rem;color:var(--muted);text-align:center;background:var(--soft)}
+.gl{padding:8px 10px;border-bottom:1px solid var(--soft);font-weight:600;display:flex;align-items:center;background:var(--panel);position:sticky;left:0;z-index:1}
+.gc{border-bottom:1px solid var(--soft);border-left:1px dashed var(--soft);min-height:38px}
+.bar{margin:6px 3px;border-radius:4px;padding:3px 7px;font-size:.68rem;font-weight:600;line-height:1.35;min-height:24px;display:flex;align-items:center}
+.b-stage{background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--accent)}
+.b-rig{background:var(--wip-soft);color:var(--wip);border:1px solid var(--wip)}
+.b-build{background:var(--info-soft);color:var(--ink);border:1px solid var(--line)}
+.b-reh{color:var(--ink);border:1px dashed var(--muted)}
+.b-show{background:var(--ink);color:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.74rem;color:var(--muted)}
+.legend i{display:inline-block;width:16px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:10px;padding:12px 14px}
+.day{border:1px solid var(--soft);border-radius:6px;padding:10px 12px}
+.day h4{margin:0 0 6px;font-size:.86rem}
+.day ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:.78rem}
+.day li{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px}
+.day li .mono{color:var(--muted);font-size:.72rem}
+.day li.hl span:last-child{font-weight:700}
+.day li.warn span:last-child{color:var(--todo)}
+
+table.mx{border-collapse:collapse;width:100%;min-width:820px;font-size:.77rem}
+.mx th,.mx td{padding:7px 9px;border-bottom:1px solid var(--soft);text-align:left;vertical-align:top}
+.mx thead th{background:var(--soft)}
+.mx tbody th{font-weight:600;white-space:nowrap;background:var(--panel);position:sticky;left:0}
+.mx td.none{color:var(--line)}
+.mx td.flag{color:var(--todo);font-weight:600}
+.refs{padding:4px 14px 14px}
+.grp{border-top:1px solid var(--line)}
+.grp .list{border:0;border-radius:0}
+.gh2{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:.82rem;font-weight:700;background:var(--soft)}
+.gh2 b{font-family:var(--mono);font-weight:600}
+.gh2 .car{margin-left:auto}
+.g-todo .gh2{color:var(--todo);background:var(--todo-soft)}
+.g-wip .gh2{color:var(--wip);background:var(--wip-soft)}
+.g-ok .gh2{color:var(--ok)}
+.g-info .gh2{color:var(--muted)}
+.sect-b.inner{padding:12px 14px 14px}
+.etc{margin-top:14px}
+.common-card .t{color:var(--ink)}
+.hero{display:flex;flex-direction:column;gap:8px}
+.mx-wrap{border-radius:10px}
+table.big-mx{font-size:.86rem;min-width:900px}
+.big-mx th,.big-mx td{padding:10px 12px}
+.big-mx thead th{font-size:.9rem;vertical-align:bottom}
+.big-mx thead th small{display:block;font-weight:500;font-size:.72rem;color:var(--accent-ink);font-family:var(--mono)}
+.big-mx tbody tr:nth-child(-n+3) td{background:var(--bg)}
+.big-mx tbody tr:nth-child(3) td,.big-mx tbody tr:nth-child(3) th{border-bottom:2px solid var(--line)}
+.k-flag2{background:var(--todo)}
+.rider-row td,.rider-row th{background:var(--accent-soft)!important;border-bottom:2px solid var(--line)}
+.rbtn{display:inline-block;font-weight:700;font-size:.82rem;color:var(--bg);background:var(--ink);border-radius:6px;padding:6px 10px;text-decoration:none;white-space:nowrap}
+.rbtn:hover,.rbtn:focus-visible{background:var(--accent-ink);outline:none}
+.orig-l{display:block;margin-top:5px;font-size:.72rem;color:var(--muted)}
+.refs ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:.85rem}
+.refs .src{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.refs p{margin:8px 0 0;color:var(--muted);font-size:.82rem}
+
+/* diagrams */
+.plan{margin:0;padding:12px 14px;border-bottom:1px solid var(--soft);background:var(--bg)}
+.plan svg{width:100%;max-width:720px;height:auto;display:block;margin:0 auto}
+.plan figcaption,.tl-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.72rem;color:var(--muted);margin-top:6px;justify-content:center}
+.plan figcaption i,.tl-leg i{display:inline-block;width:14px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.k-art{background:var(--accent-soft);border:1.5px solid var(--accent)} .k-flag{background:var(--todo-soft);border:1.5px solid var(--todo)} .k-sys{background:var(--wip)}
+.k-show{background:var(--ink)} .k-cer{background:var(--accent)} .k-reh{border:1.5px dashed var(--muted)} .k-set{background:var(--soft);border:1px solid var(--line)} .k-chg{background:var(--line)}
+.scroll-x{overflow-x:auto}
+svg text{font-family:var(--sans);font-size:11.5px;fill:var(--ink)}
+svg .cap{font-size:10.5px;fill:var(--muted);font-family:var(--mono)}
+svg .mono-t{font-family:var(--mono);font-size:10.5px}
+svg .muted-t{fill:var(--muted)} svg .art-t{fill:var(--accent-ink);font-weight:600} svg .flag-t{fill:var(--todo);font-weight:600} svg .sys-t{fill:var(--wip);font-weight:600}
+svg .hall{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+svg .led{fill:none;stroke:var(--wip);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+svg .stage{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.2;stroke-dasharray:5 4;fill-opacity:.55}
+svg .pa{fill:var(--soft);stroke:var(--muted)}
+svg .aud{fill:var(--soft);stroke:none}
+svg .foh{fill:var(--soft);stroke:var(--muted)}
+svg .node{fill:var(--panel);stroke:var(--line);stroke-width:1.2}
+svg .art{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .flag{fill:var(--todo-soft);stroke:var(--todo);stroke-width:1.5}
+svg .dashed{stroke-dasharray:4 3}
+svg .scrim{stroke:var(--ink);stroke-width:4;stroke-dasharray:2 3}
+svg .beam{stroke:var(--todo);stroke-width:1.5;stroke-dasharray:6 4}
+svg .sig{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .dim{stroke:var(--muted);stroke-width:1}
+svg .haze{fill:var(--todo);fill-opacity:.07;stroke:var(--todo);stroke-dasharray:6 5;stroke-opacity:.6}
+svg .lsg{fill:var(--todo);fill-opacity:.15;stroke:var(--todo);stroke-dasharray:4 3}
+svg .mk-ink,svg .mk-art{fill:var(--muted)} svg .mk-flag{fill:var(--todo)} svg .mk-sys{fill:var(--wip)}
+svg .grid{stroke:var(--soft);stroke-width:1}
+svg .tl-show{fill:var(--ink)} svg .tlt-show{fill:var(--bg);font-weight:600}
+svg .tl-cer{fill:var(--accent)} svg .tlt-cer{fill:var(--bg);font-weight:600}
+svg .tl-reh{fill:none;stroke:var(--muted);stroke-dasharray:4 3} svg .tlt-reh{fill:var(--muted)}
+svg .tl-set{fill:var(--soft);stroke:var(--line)} svg .tlt-set{fill:var(--ink)}
+svg .tl-chg{fill:var(--line)}
+.flowsvg{display:block;height:auto}
+.tl{display:block;height:auto}
+.shows .tlwrap{padding:4px 18px 16px}
+svg .band{fill:var(--bg)} svg .rowline{stroke:var(--line);stroke-width:1} svg .hour{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
+@media (prefers-reduced-motion:reduce){.car{transition:none}}
+</style>
+
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div class="label">UNFOLD X 2026 · 문화역서울284 메인홀</div>
+    <div class="title-row">
+      <h1>무대 퍼포먼스 <span>작가별 요구사항</span></h1>
+      <div class="stamp">업데이트 11/06</div>
+    </div>
+    <p class="howto">한 표에 다섯 팀의 요구사항을 모았습니다. 아래 작가별 칸을 누르면 그림, 신호 흐름, 체크할 것이 나옵니다.</p>
+  </header>
+
+  <section class="hero">
+    <div class="scroll mx-wrap"><table class="mx big-mx" id="matrix"></table></div>
+    <div class="legend"><span><i class="k-flag2"></i>주황 글씨 = 아직 정해지지 않은 것</span><span>— = 해당 없음</span></div>
+  </section>
+
+  <section class="shows"><h2>공연 · 리허설 일정</h2><div class="tlwrap" id="shows"></div></section>
+
+  <div class="group-title"><h2>작가별 상세</h2><p>이름을 누르면 그림 · 신호 흐름 · 체크할 것 · 진행 중</p></div>
+  <section class="arts" id="artists"></section>
+
+
+
+  <details class="sect etc">
+    <summary><span class="st">기타<small>날짜별 셋업 · 시간표 · 공통 시스템 · 결정사항 · 원본 자료</small></span><span></span><span class="car">▸</span></summary>
+    <div class="sect-b">
+  <details class="sub">
+    <summary><span class="t">일정<span class="d">날짜별 무대 도식 · 시간표</span></span><span></span><span class="car">▸</span></summary>
+    <div class="sect-b inner">
+      <div class="scroll"><div class="gantt" id="gantt"></div></div>
+      <div class="legend">
+        <span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>무대단</span>
+        <span><i style="background:var(--wip-soft);border:1px solid var(--wip)"></i>트러스·샤막·레이저</span>
+        <span><i style="background:var(--info-soft);border:1px solid var(--line)"></i>시공·셋업</span>
+        <span><i style="border:1px dashed var(--muted)"></i>리허설</span>
+        <span><i style="background:var(--ink)"></i>공연</span>
+      </div>
+      <details class="sub"><summary><span class="t">시간 단위 타임테이블<span class="d">11/23 – 12/6</span></span><span></span><span class="car">▸</span></summary><div class="days" id="days"></div></details>
+      <details class="sub"><summary><span class="t">자료마다 다른 시각<span class="d">기준: 최종 시스템 일정표 (11/5)</span></span><span class="pill p-todo" id="c-conf"></span><span class="car">▸</span></summary><div class="sub-b"><div class="list" id="conf"></div></div></details>
+    </div>
+  </details>
+
+  <details class="sub">
+    <summary><span class="t">공통 시스템 · 결정사항<span class="d">LED · 음향 · 조명 · 전기 · 업체 · 공간 · 운영</span></span><span></span><span class="car">▸</span></summary>
+    <div class="sect-b inner">
+      <details class="sub"><summary><span class="t">공통 시스템<span class="d">LED · 음향 · 조명 · 전기 · 업체</span></span><span></span><span class="car">▸</span></summary><div class="refs"><ul id="system"></ul></div></details>
+      <details class="sub"><summary><span class="t">공간 · 구조물 결정사항</span><span></span><span class="car">▸</span></summary><div class="refs"><ul id="venue"></ul></div></details>
+      <details class="sub"><summary><span class="t">운영</span><span></span><span class="car">▸</span></summary><div class="refs"><ul id="ops"></ul></div></details>
+    </div>
+  </details>
+
+  <details class="sub">
+    <summary><span class="t">자료<span class="d">라이더 원본 · 참고 자료 · 변경 기록</span></span><span></span><span class="car">▸</span></summary>
+    <div class="sect-b inner">
+      <details class="sub"><summary><span class="t">라이더 원본 · 참고 자료</span><span></span><span class="car">▸</span></summary><div class="refs"><ul id="sources"></ul></div></details>
+      <details class="sub"><summary><span class="t">변경 기록</span><span></span><span class="car">▸</span></summary><div class="refs"><ul id="log"></ul></div></details>
+    </div>
+  </details>
+    </div>
+  </details>
+</div>
+
+<script>
+const S={crit:["p-todo","체크"],todo:["p-todo","확인 필요"],wip:["p-wip","진행 중"],ok:["p-ok","확정"],info:["p-info","참고"]};
+const ORDER={crit:0,todo:1,wip:2,ok:3,info:4};
+
+/* item: [상태, 분류, 한 줄 요약, 라이더/요구 원문, 현재 상황, 출처] */
+const ARTISTS=[
+{id:"ceremony",name:"개막 세레모니",en:"Opening ceremony",work:"리얼리티 체크 개막 선포",
+ shows:["11/26(목) 16:00 개막식 · 세레모니 3분30초"],reh:"11/25 10–12 테크 · 14–17 · 11/26 09–12 · 13–15 최종",
+ rider:["세레모니 구성안 (10/29)",""],
+ brings:"대본 낭독: 서울문화재단 대표이사 (대사 약 80초)",
+ flow:[["FX",[["LSG 저연무","flag"],"무대·객석 앞 낮게"]],
+       ["LASER",[["레이저","flag"],"객석 맨 뒤 → LED 포스터 매핑"]],
+       ["AUDIO",["큐 사운드 64초 + 음악 94초","저음 '지진' 울림","PA"]],
+       ["LED",["포스터 → 날아감 → 레이저로 다시 그림"]]],
+ items:[
+  ["crit","연무","LSG 저연무 실내 사용 승인","빅뱅 장면: 틈에서 바람과 연기, 복귀 후에도 연기가 낮게 남음.","일정표: 11/23 LSG 포그 셋업, 11/24 15–16 LSG·포그 테스트, '감지기 OFF 확인'. 재단 확인 필요 항목에 '특수효과 문화역 실내 사용 가능 여부'.","구성안·일정표·중간보고 p38"],
+  ["todo","레이저","레이저 위치·밝기 확정","도착 장면 5지점, 복귀 장면 객석 맨 뒤 가정. 관객 방향 조사는 안전 기준으로 업체와 설계.","조명도면에 10W 레이저 3대. 미리암용과 같은 장비인지 확인.","구성안·조명도면"],
+  ["todo","레이저","레이저 트리거 7개 큐 맞추기","음악 50.0 · 56.5 · 62.0 · 70.0 · 76.5 · 82.0 · 88.5초.","","구성안"],
+  ["todo","운영","복귀 후 퇴장인지 다음 순서인지","","대본에 정해지지 않음.","구성안"],
+  ["todo","운영","재단 확인: 신설 프로그램 정식 명칭·상영 기간·장소","1번 인사말 원고.","","구성안"],
+  ["ok","일정","세레모니 3분30초","재단 표는 1분.","민호 감독 3분30초 요청 (11/3).","11/03"],
+  ["info","조명","장면별 조명","평상시 + 대표이사 스팟 → 암전·녹색 샤워 → 실루엣 → 녹색 유지 + 레이저 → 밝은 홀 (연기 남음).","","구성안"]
+ ]},
+
+{id:"myriam",name:"미리암 블로",en:"Myriam Bleau",work:"HYPERMOBILITY",
+ shows:["11/26(목) 개막식 후 전환 15분 → 바로 시작 · 20–25분","11/27(금) 19:30 이브닝 1 · 40분"],reh:"11/25(수) 19:00–20:00",
+ rider:["라이더 rev 2026-09-15","https://drive.google.com/file/d/1MGvkYx3wyPn_q166pRw5kG7BTVCqkvnV/view"],
+ brings:"노트북, 사운드카드(TRS 출력 2), 전원 어댑터, ILDA 컨트롤러·케이블",
+ flow:[["AUDIO",[["노트북","art"],["사운드카드","art"],"TRS×2","DI×2","FOH SQ7","M4 + 서브 · M6×2"]],
+       ["LASER",[["노트북","art"],["ILDA","art"],["레이저 10–12W","flag"],"샤막 (6.2m)"]],
+       ["FX",[["스모크 1–2대 객석 쪽","flag"]]]],
+ items:[
+  ["todo","레이저","레이저 사양이 작가 요구와 맞는지 확인","RGB 10–12W, 갈보, ILDA, 40kpps@8° 이상, 풀 아날로그 모듈레이션(TTL 불가), 최대 스캔각 60°. 라이더상 주최 측 제공.","업체 에이포인트 배정, 11/24 16–18 셋업·18–20 메모리 (민호 감독 일정표). 조명도면엔 10W 레이저 3대(250W·23kg) — 모델·몇 대가 미리암용인지 미확인.","11/05 일정표·조명도면"],
+  ["ok","레이저","거치 높이 5.6m, 미리암 후 트러스와 함께 철거","퍼포머 뒤, 높이 2m 삼각대·소형 트러스·스탠드 (배치도: 2–3m, 원하는 투사 높이의 중간). 또는 T자 파이프에 매달기, C클램프+안전 와이어. 관객 머리 위 높게 투사.","레이저 높이 5,600 (10/8). 구조물은 미리암 종료 후 트러스와 철거 (10/21).","10/21"],
+  ["ok","레이저","샤막까지 거리 6.2m, 작가 OK","라이더: 8m 이상.","재실측 6,235mm. 거리·높이 작가 OK (10/26).","10/26"],
+  ["todo","레이저","레이저 각도 vs 카메라·상부 공간","객석 스캔 없음. 메자닌·발코니 폐쇄. 약 2.7m 이상 높이에 센서 노출 카메라·프로젝터 금지.","재단 촬영팀 11/26 촬영 예정 (중간보고). 카메라 위치 미정.","라이더·10/30"],
+  ["info","레이저","설치 인력 (작가 LSO 자격 보유)","레이저 설치 기술자 또는 LSO.","작가가 미국 LSO 자격 보유. 업체 에이포인트 셋업.","라이더"],
+  ["crit","샤막","최종 높이 정해서 발주 (폭 10m)","투명 샤막, 무대 전면 전체 (예: Sharkstooth Scrim FR).","W8000×H6408 (10/21) → 7,200×5,100 (10/27) → 폭 10m로 꽉 채워 발주 (10/29). PD 안 높이 4,400 vs 5,100. 중간보고서엔 '무대 전체 덮는 사이즈'만.","10/29"],
+  ["ok","샤막","발주 진행 결정","","공연 성립을 위해 진행 (10/20).","10/20"],
+  ["ok","샤막","트러스 이탈장치로 2회 낙하","1차 하단 이탈, 2차 상단 이탈.","리허설 시트 2. 11/25 이탈 연습 (중간보고 p98 안전).","일정 시트"],
+  ["ok","샤막","설치 11/23 특효팀(mms) 13–15시","이탈장치·스크린 셋업. '샤막 오전 내 수령 예정'.","","11/05 일정표"],
+  ["ok","샤막","리프트 1대 사용, 하수 백스 보관","트러스는 오르내릴 수 없어 리프트 작업.","현장 보유 1대뿐 → 1대만 사용 (11/2). 11/25 리허설 후 프리셋, 11/26 공연 후 프리셋.","11/02"],
+  ["info","샤막","11/26 밤 재설치 (이중 이탈)","","VIP 투어 후 19:00~.","일정 시트·일정표"],
+  ["ok","샤막","샤막·트러스 철거 11/28 09–11","","최종 시스템 일정표: 트러스·트러스 LED·샤막·이탈기 11/28 09–11. 일정 시트·중간보고의 '11/27 23:00~'는 이전 값.","11/05 일정표"],
+  ["todo","조명","전시 '작은 LED' 소등 범위","완전 암전, 퍼포머에게는 아주 약한 조명만.","퍼포먼스 때 작은 LED 끄는 것 검토 중 (10/2). 미확정.","10/02"],
+  ["todo","무대","무대 위 다른 장비 안 보이게","무대 위에 다른 장비가 보이면 안 됨.","개막식 집기, 바로 다음 순서 쿠로카와 테이블 처리 확인. 트러스 가리는 LED는 확정 (10/26).","라이더"],
+  ["crit","연무","스모크 머신 사용 승인","1–2대, 객석 쪽, 중간 지속·중간 밀도. 무대 쪽이 아니라 객석 공간 전체를 연기로 채움 (샤막이 경계 역할).","시트에 '사용 가능하도록 체크'만. 일정표엔 리허설 '감지기 OFF 확인'만. 공연일 승인 미정.","일정 시트·일정표"],
+  ["todo","조명","조명도면 작가 확인","","봉윤 감독 도면(레이저 위치 포함) 11/5 공유 → 작가 회신 필요.","11/05"],
+  ["ok","음향","PA+서브","서브우퍼 포함 좋은 PA.","공통: d&b M4×4 + CODA SCV 서브×2.","10/30 중간보고"],
+  ["wip","음향","모니터 2대 → d&b M6 (공통 4대 중)","모니터 2대.","협의표에 '모니터 2, DI 2' 반영 (p72).","10/30 중간보고"],
+  ["wip","음향","TRS 2 → DI 2 (또는 스테레오 DI 1)","사운드카드 → DI 연결 TRS(잭) 케이블 2개도 주최 측 준비.","DI 실물은 음향팀(큐도스) 확인.","10/30 중간보고"],
+  ["ok","무대","노트북용 작은 테이블 (~1×0.5m)","라이더의 'riser 0.75×0.75'는 테이블이라는 작가 답변.","10/8 답변. 시트상 아티스트 체크 완료.","10/08"],
+  ["todo","무대","어떤 테이블인지 류진아 감독에게 공유","","류진아 감독 요청 (10/23).","10/23"],
+  ["wip","전원","무대 콘센트 2구 이상","컴퓨터·사운드카드·레이저.","","라이더"],
+  ["info","인력","음향 기술자 + 레이저 설치 기술자","","","라이더"],
+  ["todo","일정","셋업 2시간 vs 리허설 슬롯 1시간","설치 30 + 레이저 캘리브레이션·안전 45 + 사운드체크 45 = 2h. 철수 10분(무대 위 5분).","11/25 1시간 안에 40→20분 숏버전 + 샤막 이탈 연습 (중간보고 p58). 레이저는 11/24에 미리 셋업.","일정 시트·10/30"],
+  ["info","일정","공연 약 30분","","개막 20–25분, 11/27은 40분.","일정 시트"]
+ ]},
+
+{id:"kurokawa",name:"료이치 쿠로카와",en:"Ryoichi Kurokawa",work:"nD (라이브)",
+ shows:["11/26(목) 미리암 후 전환 10분 → 개막 퍼포먼스 2","11/27(금) 20:20 이브닝 2 · 40분"],reh:"11/25(수) 18:00–19:00",
+ rider:["tRider_nD","https://drive.google.com/file/d/1ytDJvUhF_-QP1vwaEscxKmOYunnk7rE6/view"],
+ brings:"MacBook Pro, RME Fireface UCX II",
+ flow:[["AUDIO",[["MacBook","art"],["RME UCX II","art"],"TRS×6",["무대 믹서 6in/3out","flag"],"L·R·Sub","M4 + CODA 서브"]],
+       ["VIDEO",[["MacBook","art"],"HDMI×2 WUXGA",["전송 방식 미정 (SDI 불가)","flag"],"LED 2면 2496×1536"]]],
+ items:[
+  ["todo","음향","음향 스펙 작가에게 회신","작가 메일 (10/22): 플레이어 시스템·음향·콘솔이 라이더 사양과 맞는지 확인 요청.","음향 시스템은 나옴 (중간보고): A&H SQ7, d&b M4×4, M6×4, CODA SCV×2. 이걸로 회신 가능. 회신 없음.","10/22·10/30"],
+  ["todo","음향","무대 위 믹서 6in/3out — 장비 목록에 없음","예: Mackie 1642VLZ4. 입력 6 이상, 밸런스 출력 3 이상 (메인 2 + 독립 라인아웃 1), AUX 사용 안 함.","공통 음향 목록에 무대 믹서 없음. 협의표에는 '믹서 입력6/출력3'으로만 적힘.","10/30 중간보고"],
+  ["ok","음향","PA 2.1ch","메인 2ch 60Hz–20kHz (예: Meyer M'elodie) + 서브 30–120Hz (예: 700-HP).","d&b M4 + CODA SCV 서브.","10/30 중간보고"],
+  ["wip","음향","TRS 케이블 6 + 롱 케이블 3","UCX II → 믹서 1/4\" TRS 밸런스 6, 믹서 → PA 롱 케이블 3.","","라이더"],
+  ["todo","영상","두 번째 영상 출력용 USB-C → HDMI 어댑터","결선도: MacBook HDMI 1 + USB-C→HDMI 어댑터 1.","작가 지참인지 확인.","라이더"],
+  ["todo","영상","LED 2면이 16:10 조건에 맞는지 작가 확인","원문은 프로젝터 2대 (10,000lm 이상, 16:10 네이티브, WUXGA 이상) 기준. 16:10 2면 (예: 각 8000×5000, 최소 4000×2500), 사이 10–80cm, 일자 / V자 120° / 상하 적층(옵션).","메인 LED 6500×4000, 2496×1536 픽셀 (2.6mm) — 비율 1.625로 16:10(1.6)과 조금 다름. WUXGA 1920×1200 입력을 LED에서 어떻게 스케일할지도 함께 확인. 작가 확인 전.","10/30 중간보고"],
+  ["crit","영상","WUXGA 2라인 전송 방식 (3G-SDI 불가)","1920×1200 네이티브. EDID 패스스루 익스텐더·광·HDBaseT 사용.","중간보고 협의표 영상 칸 '-'. 영상팀(베이직테크)과 미정.","라이더·10/30"],
+  ["ok","무대","개막 후 무대단 없이 진행 (작가 동의)","최소 무대 8000(w)×4000(h)×4000(d)mm.","삼각단 개막 후 철거 작가 동의 (10/26). 단, 중간보고 p72는 11/27을 '284 대여단 5개'로 적음 → 03 일정의 '다른 시각' 참고.","10/26"],
+  ["todo","무대","장비 테이블 2000×1000×900 미확보","2000(W)×1000(D)×900(H).","못 찾음 (10/28). 대안 1800×750×740 / 1200×600×740 두 개 — 16cm 낮음. (원문 표기는 2000(w)×900(h)×1000(d), 같은 크기)","10/28"],
+  ["wip","전원","무대 전원 3구 이상, F형","100–240V.","","라이더"],
+  ["ok","무대","전시 때 LED 아래 구조물 흑막","블랙 천 또는 MDF로 가림 (작가 요청 10/26).","레이허 흑막 처리.","10/26"],
+  ["info","일정","1부 15–20분, 2부 35–40분","라이브라 당일 변동 가능 (작가 메일 10/22).","","10/22"]
+ ]},
+
+{id:"albert",name:"알베르트 바르케 두란",en:"Albert.DATA",work:"SYNAPTICON",
+ shows:["11/28(토) 19:30 이브닝 1 · 20–25분 (라이더)"],reh:"11/27(금) 22:00–23:00",
+ rider:["Tech Rider May 2026","https://drive.google.com/file/d/1ULpoqG-eVmwwGmC31fcsnmohEIivKDd9/view"],
+ brings:"MacBook Pro M4 Pro (Ableton · TouchDesigner), Scarlett 4i4 (3rd Gen), 커스텀 BCI(뇌파 인터페이스), 커스텀 카메라, 컴퓨터 스탠드",
+ flow:[["AUDIO",[["MacBook","art"],["Scarlett 4i4","art"],"TRS 라인","FOH SQ7 직결",["M4 + 서브 103dB(A)","flag"]]],
+       ["VIDEO",[["MacBook","art"],["4K HDMI 롱케이블","flag"],"LED 6.5m"]],
+       ["FX",[["헤이저 공간 전체","flag"]]]],
+ items:[
+  ["crit","연무","헤이저 사용 승인 (공간 전체 짙게)","공간 전체에 짙고 균일하게 계속 유지, 자동 기능, 고출력.","문화역서울284 협의 미정.","라이더"],
+  ["todo","인력","현장 기술 코디네이터 1명 지정","Technical Supervisor/Coordinator 1.","작가는 테크니션 없이 1인 방한 (중간보고 p71). 일정표에 'FOH + 기술 코디 1명' 메모만, 지정자 없음.","10/30·일정표"],
+  ["todo","영상","4K HDMI 롱케이블 길이","노트북 → 화면 4K HDMI 1.","협의표에 '4K Long HDMI 요청' 반영. 길이·익스텐더 미정.","10/30 중간보고"],
+  ["todo","음향","FOH 103dB(A) 가능한지","서브 충분히, FOH 103dB(A) 무왜곡 30Hz–20kHz.","M4×4 + CODA SCV×2로 가능한지, 전시장 음량 제한 확인.","10/02"],
+  ["todo","전체","라이더 항목별 작가 확인 회신 받기","","라이더 대부분 작가 확인 회신 없음.","라이더"],
+  ["info","공간","암전, 좌석형 공간","극장형, 가능하면 좌석, 암전 상태.","","라이더"],
+  ["ok","조명","조명쇼 불필요","","","라이더"],
+  ["ok","영상","LED 폭 4.88m 이상","","메인 LED 6.5m로 충족.","라이더"],
+  ["wip","음향","TRS 라인 하우스 믹서 직결","스테레오 PA. 밸런스 1/4\" TRS.","","라이더"],
+  ["todo","무대","의자 필요 여부 확인","라이더 제공 목록은 '의자 0'. 정면도 사진은 의자에 앉아 공연, 스탠드형 거치대·링라이트 있는 커스텀 셋업.","작가 지참인지 확인.","라이더"],
+  ["ok","전원","멀티탭 (EU형), 퍼포머 자리까지 220V","도면: 전원(220V)을 작가 셋업 위치까지.","한국 220V C/F형 호환.","라이더"],
+  ["ok","일정","셋업·사운드체크 30분","","리허설 1시간 안에 들어감.","라이더"],
+  ["info","일정","토크1 패널로도 참여 (11/27)","","토크1 발표 + 라운드테이블 2.","토크 타임테이블"]
+ ]},
+
+{id:"lionclad",name:"라이언클래드 & 유시",en:"LionClad & Yusi",work:"라이브 셋 + 라이브 비주얼",
+ shows:["11/28(토) 20:10 이브닝 2 · 30분"],reh:"11/27(금) 21:00–22:00",
+ rider:["라이더 이미지 + 10/9 메일","https://drive.google.com/file/d/1Cqox_XSYJ7pPqfSmLnSEkRpsTQrV_IYU/view"],
+ brings:"라이언클래드: AKAI MPC XL, 짧은 케이블 · 유시: APC40, 랩탑, DDJ-400",
+ flow:[["AUDIO",[["MPC XL","art"],"TS 스테레오","스테이지 믹서 / DI","현장 기사 → FOH","PA"]],
+       ["VIDEO",[["유시 랩탑","art"],"HDMI","LED"]],
+       ["CHECK",[["유시 오디오?","flag"],["유시 테이블?","flag"]]]],
+ items:[
+  ["todo","무대","테이블 대체품 600×600×1000 — 10cm 높다고 작가 안내","60×60(±5)cm, 높이 90(±5)cm.","렌탈 보유품 600×600×1000 — 허용 최대 95cm보다 5cm 높음 → '대용'으로 안내 필요.","10/28"],
+  ["todo","무대","유시 장비 테이블 필요 여부","","APC40·랩탑·DDJ-400 놓을 자리가 라이더에 없음.","10/09"],
+  ["todo","음향","유시 오디오 출력 여부","","DDJ-400 사용. 라이더에 유시 오디오 라인 없음.","10/09"],
+  ["todo","음향","모니터 1대 (도면 표기) 배정","라이더 도면에 MONITOR 1대, 테이블 좌측.","공통 M6 4대 중 배정 확인.","라이더"],
+  ["todo","전체","라이더 보완·유시 추가 요청 회신","","10/7 해초님 요청, 회신 없음. 중간보고 협의표도 전 칸 '-'.","10/07·10/30"],
+  ["wip","음향","MPC XL → 스테이지 믹서/스테레오 DI (테이블 바로 옆)","TS 스테레오 아웃. 믹서/DI는 무대 위 테이블 옆에 (작가는 짧은 케이블만 지참). 메인 스피커 좌우 2. 스피커·믹서·테이블 작가 미지참.","","라이더"],
+  ["wip","음향","FOH까지 연결은 현장 기사 준비","컨트롤룸이 따로면 케이블·DI 지참 불가 (10/9 메일).","","10/09"],
+  ["wip","영상","유시 랩탑 → 화면 HDMI 1","라이브셋 + VJ 협업 (중간보고 p71).","","10/09"],
+  ["wip","전원","전원 1구 220V","","","라이더"]
+ ]},
+
+{id:"ore",name:"에이와다 · 오픈 릴 앙상블",en:"Ei Wada · Open Reel Ensemble",work:"MAGNETIZE",
+ shows:["12/5(토) 19:30–20:45 · 75분 · VJ 동행"],reh:"12/4(금) 셋업 → 18:30 조명 → 19–21 리허설",
+ rider:["라이더 10/30 수정본","https://drive.google.com/file/d/1WTcx_eEs1xfYQ7uBlRP650sGhT0jw5D7/view"],
+ brings:"릴 레코더 REEL-1~6, 투어 믹서 (ZOOM L-20·L-12), 카메라+카메라맨, 무선 영상 송신기, 100V 변압기 1.5kW, 릴 케이스 2 · VJ 장비 (VJ 별도 동행)",
+ flow:[["AUDIO",[["투어 믹서","art"],"XLR L/R + 마이크 3ch","FOH SQ7","M4 + 서브 · M6×4"]],
+       ["VIDEO",[["카메라","art"],["무선 2.4/5/6GHz","flag"],"무대 중앙 HDMI","LED"]],
+       ["VJ",["FOH 오디오 XLR",["VJ","art"],"SDI 무대→FOH","메인 스위처"]]],
+ items:[
+  ["ok","일정","12/4 장비셋업 16:00–19:00 (전시 중)","","최종 시스템 일정표 기준. 스태프 식사는 셋업 중 유동적으로. 일정 시트의 15:30은 이전 값.","11/05 일정표"],
+  ["crit","연무","포그·헤이즈 사용 승인","스트로브·헤이즈·레이저 환영. 재단도 '조명에 힘 + 포그' 요청 (10/8).","승인 미정.","10/08"],
+  ["todo","일정","셋업 슬롯 3h vs 라이더 반입 30분 + 셋업 2.5–3h","라이더: 셋업 시작 전에 전원·현지 장비(백라인·받침대·라이저)가 모두 준비돼 있어야 함.","12/4 16–19 안에 18:30 조명 체크까지 겹침. 반입을 16시 전에 할 수 있는지 확인.","라이더"],
+  ["todo","영상","프로젝션 대신 LED 사용 작가 확인","라이더: 영상 프로젝션 시스템 + 오퍼레이터.","메인 LED로 진행 예정. 작가 동의 확인.","라이더"],
+  ["todo","영상","무대→FOH SDI 케이블 용도 확인","SDI 케이블 무대→FOH, 무대 쪽 10m 여유.","카메라 신호용인지 VJ용인지 라이더에 없음.","라이더"],
+  ["todo","무대","무빙 라이저 3개 처리 작가 최종 확인","10/15 플롯: Moving Riser ×3 (2700×2700 1개, 1800×1800 2개). 10/30 최신 라이더의 현지 준비 목록에는 라이저 없음.","PD 3×3·2×2 제안 (10/22). 최신 라이더에서 빠진 건지 작가 확인 필요.","10/23"],
+  ["todo","무대","받침대 3개 제작 주체 확정","블랙 받침대 ×3 (REEL-1·4·5), 도면대로 현지 제작.","규격 W520 D430 H1050 (바퀴 포함), 시공 제작물 목록에 있음 (중간보고 p134). 업체(이용희 실장 vs 세트업체) 미정.","10/04·10/30"],
+  ["todo","무대","카트 4개 동시에 필요한지","반입용 카트 4 (약 70×50cm).","류진아 확인 요청 (10/23).","10/23"],
+  ["todo","무대","투어팀 식수","셋업 시작부터.","","라이더"],
+  ["todo","음향","백라인 렌탈 — 공통 목록에 없음","SM58 5, 롱붐 스탠드 10(예비 1), 18\" 미디엄 크래시 1, 붐 심벌 스탠드 3, 웨이트 3.","공통 음향 목록(SQ7·M4·M6·CODA)에 마이크·스탠드·심벌 없음. 웨지 4는 M6 4대로 충족.","10/30 중간보고"],
+  ["todo","영상","무선 영상 송신 현장 테스트","Accsoon CineView Master 4K, 2.4/5/6GHz, 약 25ms, 1080p/30 또는 1080p/60 운용.","간섭 시 유선 플랜B (HDMI 15m).","라이더"],
+  ["todo","인력","영상 오퍼레이터 지정","영상 시스템 오퍼 + 재생·스위칭 오퍼.","미지정.","라이더"],
+  ["todo","전원","220V / 60Hz / C·F형 사전 안내","전압·주파수·콘센트 타입 사전 통보 요청.","ORE는 100V 장비용 변압기(1.5kW) 지참.","라이더"],
+  ["ok","무대","개막 무대단 재사용 (12/4 09시 설치, 12/6 09시 철수)","시야 확보 필수, 높은 무대 선호, 약 7.5×4m.","11/26 개막 후 철거·현장 보관 → 12/4 09–11 재설치, 12/6 09–11 철수 (무대단 일정표).","10/27"],
+  ["ok","음향","PA+서브, FOH 엔지니어","파워풀하게, 킥을 서브로 보강. 귀에 거슬리는 대역은 EQ로 조정.","M4 + CODA SCV, 웨지 M6×4.","10/30 중간보고"],
+  ["wip","음향","입력: 믹서 L/R XLR 2 + 마이크 3ch","","","라이더"],
+  ["wip","음향","케이블·예비 케이블","현지 오디오·전원 전부, 예비 XLR 5m×2·3m×2, 예비 TS 5m×4·3m×4.","","라이더"],
+  ["wip","영상","카메라 → 무대 중앙 HDMI 입력","1920×1080p, HDMI 10m, 플랜B 15m.","협의표에 'FHD HDMI' 반영.","10/30 중간보고"],
+    ["wip","영상","VJ용 XLR (FOH 오디오 신호)","모노·스테레오.","","라이더"],
+  ["ok","영상","VJ 동행, 75분 확정","","VJ 결정 10/28, 75분 확정 11/2·11/5.","11/05"],
+  ["wip","조명","조명 오퍼레이터, 역광·샤프·미니멀","대담하고 샤프한 쿨톤. 과한 색·요소·바쁜 플래싱 피함. 손 동작이 관객·카메라에 보이게.","","라이더"],
+  ["ok","조명","조명 협의 30분 → 12/4 18:30–19:00","","저녁시간 활용 (승헌 11/2).","11/02"],
+  ["wip","전원","무대 전원 3곳 총 2kW + 백스테이지","USL·USR·USC, 플롯상 각 6구.","","라이더"],
+  ["ok","일정","리허설 2시간 가능","","다른 팀 없음 (류진아 11/2).","11/02"],
+  ["ok","일정","12/5 공연 전 30분 점검, 전시 중 셋업 유지","","전시 LED 앞 셋업 재단 협의 (10/27).","10/27"],
+  ["info","일정","셋업 2.5–3h, 리허설 1.5–2h, 철수 90분","반입 30, 셋업 2.5–3h, 사운드체크 30, 리허설 1.5–2h (시간 부족하면 45분–1h도 가능), 철수 90, 반출 30. 반입·반출은 동선·차량 거리에 따라 달라짐.","","라이더"]
+ ]},
+
+{id:"kurokawa-ex",name:"쿠로카와 전시작",en:"Ryoichi Kurokawa · Installation",work:"e-x/nd-o (메인홀 전시)",
+ shows:["11/26–12/9 · 11:00–19:00 · 8분 루프"],reh:"11/23 테크니션 설치",
+ rider:["전시 라이더","https://drive.google.com/file/d/1cO0NVJvDq4F5gAQGNRpqm4mismmIfihs/view"],
+ brings:"라이더에 작가 지참 장비 없음",
+ flow:[["VIDEO",["Mac (3화면)","HDMI×3","LED 9:16 + 16:9 + 16:9"]],["AUDIO",["Mac","인터페이스","2.1ch"]]],
+ items:[
+  ["wip","영상","재생용 Mac (M6 맥미니)","예: Mac Studio / Mac mini M6·M5 Pro·M4 Pro·M4·M2 Pro (M1·M2 mini는 2화면만), 키보드·마우스, HDMI 3 + TB-HDMI 어댑터 2.","M6 맥미니 1대 준비 (중간보고) — 라이더 허용 목록에 있음. 어댑터·주변기기만 확인.","10/30 중간보고"],
+  ["ok","영상","3면 LED, 사이드 폭 2500","16:9 2면 각 최소 6.4×3.6m, 9:16 1면 최소 2.025×3.6m, 해상도 FHD 이상. 공간 최소: 일렬 16.0×4.0×6.4m / V자 10.0×4.0×8.0m. 전원·장비 공간 필요.","메인 6500×4000 ×2, 사이드 2500×4000 (중간보고 p17만 2000×4000으로 적힘).","10/12·10/30"],
+  ["todo","영상","LED 해상도가 FHD 조건에 맞는지","FHD 이상, 16:9 / 9:16.","사이드 960×1536은 9:16 FHD(1080×1920)보다 작음. 메인 2496×1536은 1.625 비율. 스케일링 작가 확인.","라이더"],
+  ["wip","영상","공연 때 작은 LED 소등","","검토 중 (10/2).","10/02"],
+  ["ok","무대","작은 스크린 아래 흑막","","흑막 처리 (10/26).","10/26"],
+  ["wip","음향","전시 중 2.1ch","스피커 2 (UPM-1P급, 60Hz–20kHz) + 서브 1 (UMS-1P급, 25–160Hz), 인터페이스 (RME UFX III급).","공연 없는 시간에도 필요 (10/22).","10/22"],
+  ["ok","운영","프레스 투어 전·VIP 투어 때 전시 영상으로 전환","","11/26 오전 프레스 투어 전, 개막 공연 후 VIP 투어 때 (10/30).","10/30"]
+ ]}
+];
+
+/* 공통: [상태, 담당, 한 줄, 상세, 출처] */
+const COMMON=[
+ ["crit","공통","연무 사용 승인 (개막식 LSG · 미리암 · 알베르트 · ORE)","일정표엔 리허설 때 '감지기 OFF 확인'만. 중간보고 p98 '284 안전팀과 화재경보 사전 협의'. 공연일 승인 미정.","일정표·10/30"],
+ ["crit","전기","조명도면 48.3kW vs 전기 계획 조명 20kW","조명도면 장비 합계 48.3kW·709kg. 중간보고 전기 계획은 조명 3상 40A(20kW), 메인홀 전체 60–65kW (LED 30 · 음향 10–13 · FOH 5).","조명도면·p48"],
+ ["crit","공통","영어 통역 배정 (이브닝 포함)","셋업~공연 무대 시스템 소통 (회장님 10/30). 중간보고 인력표는 이브닝 통역 '—'.","10/30"],
+ ["todo","음향팀","작가별 세부 장비 대조","공통 시스템(SQ7 · M4×4 · M6×4 · CODA×2)은 확정. 무대 믹서(쿠로카와), DI(미리암), ORE 백라인, 유시 입력이 목록에 없음.","10/30 중간보고"],
+ ["todo","조명팀","조명도면 아티스트 확인 받기","11/5 도면(레이저 위치 포함)을 각 작가에게 보내 확인.","11/05"],
+ ["todo","조명·레이저","10W 레이저 3대 용도 나누기","조명도면 3대. 개막 세레모니(객석 뒤) / 미리암(퍼포머 뒤 5.6m) 각각 몇 대인지.","조명도면"],
+ ["todo","일정","일정 시트를 최종 시스템 일정표대로 수정","최종 시스템 일정표(11/5) 기준으로 일정 시트 수정. 아티스트 이름으로 통일, 개막 후 투어 기재.","11/05"],
+ ["todo","개막식","개막식 끝나면 바로 미리암 시작 (VIP 이탈 방지)","재단 요청: 개막식 후 미리암 무대 전환 15분, 17:00 기다리지 말고 전환 끝나는 대로 바로 시작. 무대팀·작가에게 공유 필요.","11/06 재단"],
+ ["todo","무대","삼각 무대단 깊이 3,640 vs 4,550","10/21 논의: 10920×3640. 중간보고 p17·63·72: 10920×4550×600.","10/21·10/30"],
+ ["todo","무대","11/27–28 무대단: 바닥 vs 284 대여단","10/26 결정: 개막 후 단 없이 바닥 (쿠로카와 동의). 중간보고 p72: 284 대여단 2400×4800×420 5개 조합 (다른 쪽엔 2400×1200×420).","10/26·10/30"],
+ ["todo","개막식","사회자 위치·선정","돌출 단상 vs 무대 위 상수 (10/22). 중간보고: 연단 없이 무선마이크, 사회자 선정 필요.","10/22·10/30"],
+ ["todo","개막식","왼쪽 기둥 LED 콘텐츠","'리얼리티체크 모션' 제안 (10/22). 식전영상은 3면 송출 (중간보고 p59).","10/22"],
+ ["todo","무대","관객 동선: 오른쪽 끝 패널 1장 빼기 + 타워–안내데스크 통로 폭","오른쪽 끝 패널 1장 제거 요청 (관객 동선 확보). 스캐폴딩 타워–곡선 안내데스크 사이 통로 폭, 웨이트 구역 가림 처리 확인. 반영 여부 미정.","10/29 도면"]
+];
+
+/* 자료마다 다른 시각 */
+const CONF=[
+ ["개막식 끝나는 시각","최종표 16:30 / 시트·중간보고 p56 16:40 / 중간보고 식순 16:45"],
+ ["개막 퍼포먼스 시작","재단 11/6: 전환 15분 끝나는 대로 바로 시작 (17:00 고정 아님). 시트 16:50 / 중간보고 17:00·17:35"],
+ ["11/28 라이언클래드","시트 20:10–20:40 / 최종표 20:30–21:00 / 중간보고 p71 19:30~"],
+ ["12/4 ORE 리허설","최종표 19–21 / 시트·중간보고 p56 19–20"],
+ ["ORE 공연 길이","75분 19:30–20:45 (최종 일정표) / 60분 (중간보고 p56)"]
+];
+
+const SYSTEM=[
+ ["업체: 구조물 스테이지앵커 · 세트 세트데인 · 영상 베이직테크 · 특효 mms · 음향 큐도스 · 레이저 에이포인트 · 조명 봉윤 감독.","일정표"],
+ ["LED: 메인 6500×4000 ×2 (2.6mm, 2496×1536) · 사이드 2500×4000 (960×1536) · 트러스 LED 10000×500. 바닥에서 600 (무대단 높이). 트러스 LED는 전시 2일차까지.","10/30"],
+ ["음향: 콘솔 A&H SQ7 · 메인 d&b M4 ×4 · 모니터 d&b M6 ×4 · 서브 CODA SCV ×2. 24인치 모니터 2대 (개막식·퍼포먼스).","10/30"],
+ ["조명: I FORTE 3 · B-EYE 20 · STORMY 3000CC 6 · LED BAR 6 · BLINDER 20 · COB400 6 · 10W 레이저 3 — 합계 48.3kW · 709kg. 개막식용 블라인더 랙 별도.","조명도면"],
+ ["전기: 메인홀 60–65kW. LED 30kW (3상 4선) · 음향 단상 220V 20A ×3 접지 분리 (10–13kW) · 조명 3상 40A (20kW) · FOH 5kW.","10/30"],
+ ["도면 치수: 무대 폭 10,000 · 무대 깊이 쪽 7,200 · LED 위 5,104 · 조명 파이프 6,290.","스케치업"],
+ ["FOH: 객석 뒤 트러스 + 레이허 구조물 위 콘솔, 정면 그래픽월 W11135×H3300.","10/30"]
+];
+
+const VENUE=[
+ ["공연·개막식은 메인홀(중앙홀). 토크는 3등대합실.","09/28"],
+ ["삼각 무대단 — 개막식·ORE만. 11/23 셋업 → 11/26 개막 후 철거·현장 보관 → 12/4 09시 재셋업 → 12/6 09시 철거.","일정 달력"],
+ ["트러스 다리 상·하수 910 돌출. 바닥 경사 → 레이허 이벤트 데크로 수평 + 700kg 이상 웨이트(50kg H빔) + 와이어.","10/29"],
+ ["미리암 트러스 가리는 가로 LED 확정. 트러스 철거 시 트러스 조명도 함께 빠짐.","10/26"],
+ ["방음패널: 기존 구조물에 부착. 리리 11/23 13시–11/24 17시 폴리카보네이트·방음패널.","11/05"],
+ ["FOH 콘솔 구조물: 1층 정면벽에 크게 열리는 문. 중앙 유리문 조금 좁아짐.","11/02"],
+ ["짐 적재: 메인홀 뒤 두 곳 + 노란 표시 구역. 리프트는 하수 백스 보관.","10/21"],
+ ["메인홀 유리창·유리문 암막 시트.","10/30"],
+ ["귀빈석 약 50석 (좌석 라벨). 개막식 중계 없음.","10/22"]
+];
+const OPS=[
+ ["리허설 원칙: 공연 전날 저녁(전시 종료 후), 팀당 1시간.","09/30"],
+ ["전시 11:00–19:00. 11/28·12/5 야간 운영 ~22:00.","10/30"],
+ ["대기실: 사회자 2층 회의실 (11/26 13–17시), 퍼포머·운영사무국 지하 1층, 스태프 메인홀 좌우 티켓 부스.","11/02"],
+ ["11/24 콘솔 쪽 PC 작업 — 음향팀과 같이.","11/05"],
+ ["재단 촬영 11/26·11/28·12/5, 마인드 기록 11/26·27·28·12/5.","10/30"],
+ ["명찰 ARTIST 20 / STAFF 30 / SFAC 20.","10/30"],
+ ["철거 12/10–12.","09/22"]
+];
+
+const GANTT_DAYS=["11/23 월","11/24 화","11/25 수","11/26 목","11/27 금","11/28 토","11/29–12/3","12/4 금","12/5 토","12/6 일"];
+const GANTT=[
+ ["시공·셋업",[[0,1,"build","구조물·바닥·LED·특효"],[1,1,"build","음향·조명·레이저"]]],
+ ["삼각 무대단",[[0,4,"stage","설치 → 11/26 밤 철거·보관"]]],
+ ["트러스·샤막",[[0,6,"rig","11/23 셋업 → 11/28 09–11 철거"]]],
+ ["리허설",[[2,1,"reh","세레모니·개막·쿠로카와·미리암"],[3,1,"reh","개막 최종"],[4,1,"reh","라이언·알베르트"],[7,1,"reh","ORE"]]],
+ ["공연",[[3,1,"show","개막·미리암·쿠로카와"],[4,1,"show","미리암·쿠로카와"],[5,1,"show","알베르트·라이언"],[8,1,"show","ORE"]]],
+ ["ORE 무대단",[[7,2,"stage","12/4 09시 재설치"],[9,1,"stage","09시 철수"]]]
+];
+
+const DAYS=[
+ ["11/23(월)",[["09:00–13:00","구조물 셋업 (스테이지앵커)"],["09:30–11:00","무대바닥 셋업 (세트데인)"],["12:30–16:00","특효: 이탈장치·샤막·포그·LSG 셋업"],["13:00–17:00","LED 셋업 (베이직테크)"],["13:00~","리리 폴리카보네이트·방음패널 (~11/24 17:00)"],["—","쿠로카와 전시 테크니션 설치"]]],
+ ["11/24(화)",[["10:00–15:00","음향 반입·설치 (큐도스)"],["15:00–18:00","조명 셋업 · 15–16 LSG·포그 테스트"],["16:00–18:00","레이저 셋업 (에이포인트)"],["18:00–20:00","레이저 메모리"],["18:00–21:00","조명 포커싱 (실내 암전)"]]],
+ ["11/25(수)",[["10:00–12:00","개막 세레모니 테크 리허설"],["14:00–17:00","개막식 리허설"],["17:00–18:00","스태프 저녁"],["18:00–19:00","쿠로카와 리허설",1],["19:00–20:00","미리암 리허설 (샤막 이탈 연습)",1]]],
+ ["11/26(목)",[["09:00–12:00","개막식 리허설 · 프레스 전 쿠로카와 전시로 전환"],["11:00–12:00","프레스 투어"],["13:00–15:00","개막식 최종 리허설 → 15–16 S/B"],["15:00–16:00","VIP 사전 리셉션 (연남방앗간)"],["16:00–16:30","개막식 · 세레모니 3분30초 (끝 16:40/16:45 자료도 있음)",2],["전환 15분 후","미리암 블로 — 전환 끝나는 대로 바로 (재단 11/6)",1],["전환 10분 후","료이치 쿠로카와",1],["18:00–19:00","VIP 투어 · 쿠로카와 전시로 전환"],["19:00~","샤막 재설치 · 무대단 철거·보관"]]],
+ ["11/27(금)",[["15:00–18:10","토크1 (해외, 3등대합실)"],["19:30–20:10","미리암 블로",1],["20:10–20:20","무대 전환"],["20:20–21:00","료이치 쿠로카와",1],["21:00–22:00","라이언클래드 & 유시 리허설"],["22:00–23:00","알베르트 리허설"],["23:00","리허설 종료"]]],
+ ["11/28(토)",[["09:00–11:00","트러스·트러스 LED·샤막·이탈기 철거"],["14:00–16:00","전시투어 (알랭 티보, 양숙현)"],["19:30–20:00","알베르트 바르케 두란",1],["20:00–20:10","무대 전환 (시간 확인 필요)",2],["20:10–20:40","라이언클래드 & 유시 (최종표는 20:30)",1]]],
+ ["12/4(금)",[["09:00–11:00","무대단 재설치"],["14:30–18:00","토크2 (국내, 3등대합실)"],["16:00–19:00","ORE 장비 셋업 (전시 중)"],["18:30–19:00","ORE 조명 체크"],["19:00–21:00","ORE 사운드체크·리허설"]]],
+ ["12/5(토)",[["전시 중","ORE 셋업 유지"],["18:30–19:30","ORE 장비 가동·AV 점검"],["19:30–20:45","에이와다 · 오픈 릴 앙상블 (75분)",1]]],
+ ["12/6(일)",[["09:00–11:00","무대단 철수"]]]
+];
+
+const MATRIX={cols:["미리암 블로","료이치 쿠로카와","알베르트 바르케 두란","라이언클래드 & 유시","에이와다 · ORE"],works:["HYPERMOBILITY","nD","SYNAPTICON","라이브 셋 + 비주얼","MAGNETIZE"],rows:[
+ ["공연",["11/26 개막 후 · 11/27 19:30","11/26 미리암 후 · 11/27 20:20","11/28 19:30","11/28 20:10","12/5 19:30–20:45"]],
+ ["리허설",["11/25 19–20","11/25 18–19","11/27 22–23","11/27 21–22","12/4 셋업 16–19 · 리허설 19–21"]],
+ ["작가 지참",["노트북, 사운드카드, ILDA 컨트롤러, 전원 어댑터","MacBook, RME UCX II","MacBook, Scarlett 4i4, 뇌파(BCI), 카메라, 스탠드","MPC XL · 유시: APC40, 랩탑, DDJ-400","릴 레코더 6, 투어 믹서, 카메라, 무선 송신기, 변압기, VJ 장비"]],
+ ["PA·서브",["M4 + 서브","2.1ch, 30–120Hz",["103dB(A) 가능?","f"],"PA (작가 미지참)","킥 보강, FOH 엔지니어"]],
+ ["무대 믹서",["—",["6in/3out — 목록에 없음","f"],"불필요","스테이지 믹서·DI","투어 믹서 지참"]],
+ ["입력",["TRS 2 → DI 2","TRS 6 → 믹서","TRS 라인 2","TS 스테레오","XLR 2 + 마이크 3ch"]],
+ ["모니터",["M6 ×2","—","—",["1대 (도면) — 배정 확인","f"],"M6 ×4 (웨지)"]],
+ ["마이크·백라인",["—","—","—","—",["SM58×5, 붐×10, 크래시 — 목록에 없음","f"]]],
+ ["영상 입력",["— (레이저)",["HDMI×2 WUXGA, SDI 불가","f"],["4K HDMI 롱","f"],"유시 HDMI 1",["카메라 HDMI + SDI (용도 확인)","f"]]],
+ ["화면",["샤막",["16:10 2면 — 확인","f"],"LED 6.5m","LED",["LED (라이더는 프로젝션) — 확인","f"]]],
+ ["연무",[["스모크 객석 쪽","f"],"—",["헤이저 공간 전체","f"],"—",["환영 + 재단 포그","f"]]],
+ ["레이저",[["10–12W — 사양 확인","f"],"—","—","—","환영 (선택)"]],
+ ["조명",["완전 암전, 아주 약하게","언급 없음","조명쇼 불필요","언급 없음","오퍼 + 역광·샤프"]],
+ ["테이블·받침",["작은 테이블",["2000×1000×900 — 미확보","f"],"스탠드 지참",["600×600×1000 대용, 유시 미정","f"],["받침대 3 (W520 D430 H1050), 카트 4","f"]]],
+ ["무대단",["불필요 (라이더 0.75×0.75 = 테이블)","8×4×4m → 11/27 바닥?","—","—",["삼각단 재사용, 라이저 3 (최신 라이더엔 없음)","f"]]],
+ ["전원",["2구+","3구 F형","멀티탭 EU형","1구 220V",["3곳 2kW, 전압 안내","f"]]],
+ ["인력",["음향, 레이저","—",["기술 코디 미지정 (1인 방한)","f"],"현장 기사",["영상 오퍼 미지정","f"]]],
+ ["셋업",[["2h vs 슬롯 1h","f"],"1h","30분","1h",["12/4 16–19 (3h) vs 반입+셋업 3–3.5h","f"]]]
+]};
+
+const SOURCES=[
+ ["메인홀 시스템 일정표 (최종 11/5)",""],
+ ["중간보고서 10/30 — 메인홀 p16·17, 장비 p45·46, 전기 p48, 일정 p56·58, 개막식 p57·60·62, 퍼포먼스 p71·72",""],
+ ["조명도면 (봉윤 감독 11/5)",""],
+ ["개막 세레모니 구성안 (10/29)",""],
+ ["미리암 HYPERMOBILITY 라이더","https://drive.google.com/file/d/1MGvkYx3wyPn_q166pRw5kG7BTVCqkvnV/view"],
+ ["쿠로카와 nD 라이더","https://drive.google.com/file/d/1ytDJvUhF_-QP1vwaEscxKmOYunnk7rE6/view"],
+ ["쿠로카와 e-x/nd-o 전시 라이더","https://drive.google.com/file/d/1cO0NVJvDq4F5gAQGNRpqm4mismmIfihs/view"],
+ ["알베르트 SYNAPTICON 라이더","https://drive.google.com/file/d/1ULpoqG-eVmwwGmC31fcsnmohEIivKDd9/view"],
+ ["라이언클래드 라이더 + 10/9 메일","https://drive.google.com/file/d/1Cqox_XSYJ7pPqfSmLnSEkRpsTQrV_IYU/view"],
+ ["ORE 라이더 (10/30 수정본)","https://drive.google.com/file/d/1WTcx_eEs1xfYQ7uBlRP650sGhT0jw5D7/view"],
+ ["ORE 무대 플롯 (10/15)","https://drive.google.com/file/d/1qaHFYj8a5SX97oPDcQ4a50SRLrE4bmf8/view"],
+ ["행사 일정 시트","https://docs.google.com/spreadsheets/d/155LXYlLSf4FSJ82JEwz8ulKgEwCvzsoxEbJRB9S09B0/edit"],
+ ["테크라이더 폴더","https://drive.google.com/drive/folders/1y8WAlVzeb3NXHz61aAne8yiRlBqhXMjD"]
+];
+const GAPS=[];
+const LOG=[
+ ["11/06","테크라이더 원본 재대조: 미리암 레이저 거치·연무 조건, 쿠로카와 어댑터·LED 스케일링, 알베르트 공연 길이·의자, ORE 셋업 시간·SDI·프로젝션, 전시작 공간·해상도 반영."],
+ ["11/06","재단 요청 반영: 개막식 후 전환 끝나는 대로 미리암 시작. 최종 시스템 일정표(11/5) 기준으로 일정 정리."],
+ ["11/06","중간보고서 · 조명도면 · 세레모니 구성안 · 시스템 일정표 반영."],
+ ["11/06","첫 정리."]
+];
+
+/* ---------- diagrams ---------- */
+const T=(x,y,s,cls="",anc="middle")=>`<text x="${x}" y="${y}" text-anchor="${anc}" class="${cls}">${esc(s)}</text>`;
+const R=(x,y,w,h,cls,rx=3)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" class="${cls}"/>`;
+const L=(x1,y1,x2,y2,cls,arrow)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"${arrow?` marker-end="url(#ah-${arrow})"`:""}/>`;
+const C=(x,y,r,cls)=>`<circle cx="${x}" cy="${y}" r="${r}" class="${cls}"/>`;
+const DEFS=id=>`<defs>${["ink","flag","art","sys"].map(k=>`<marker id="ah-${k}-${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="mk-${k}"/></marker>`).join("")}</defs>`;
+/* 배치도: 위 = 무대 안쪽(LED), 아래 = 입구·객석 */
+function base(o){
+ let s="";
+ s+=R(20,20,600,360,"hall",6);
+ s+=T(32,372,"위: 무대 안쪽 · 아래: 입구","cap","start");
+ s+=`<polyline points="170,82 320,52 470,82" class="led"/>`+T(320,44,o.ledLabel||"메인 LED 6.5×4m ×2",o.ledFlag?"lbl flag-t":"lbl sys-t");
+ s+=L(88,128,118,84,"led")+T(70,146,"사이드 LED","lbl sys-t","start");
+ if(o.stage==="tri") s+=`<polygon points="160,92 320,62 480,92 480,164 160,164" class="stage"/>`+T(476,158,"삼각 무대단","lbl art-t","end");
+ if(o.stage==="floor") s+=T(150,212,o.floorLabel||"무대단 없음 · 바닥","lbl muted-t","start");
+ s+=R(118,176,26,34,"pa")+T(131,224,"PA L","lbl")+R(496,176,26,34,"pa")+T(509,224,"PA R","lbl");
+ s+=R(160,232,320,72,"aud",4)+T(320,272,"객석","lbl muted-t");
+ s+=R(268,326,104,30,"foh")+T(320,345,"FOH · SQ7","lbl");
+ return s;
+}
+const PLANS={
+ myriam:()=>base({stage:"floor",floorLabel:"11/26 삼각단 위 · 11/27 바닥"})
+  +R(305,94,30,14,"flag")+T(342,105,"레이저 10–12W · 높이 5.6m","lbl flag-t","start")
+  +R(292,122,56,22,"art")+T(320,137,"노트북","lbl art-t")
+  +T(356,137,"모니터 M6×2","lbl","start")
+  +L(320,110,320,166,"beam","flag")
+  +L(140,172,500,172,"scrim")+T(320,190,"샤막 W10m · 트러스에 매달고 2회 낙하","lbl art-t")
+  +L(268,104,268,170,"dim")+T(262,142,"6.2m","lbl","end")
+  +C(96,262,10,"flag")+T(96,286,"스모크","lbl flag-t")+C(544,262,10,"flag")+T(544,286,"스모크","lbl flag-t"),
+ kurokawa:()=>base({stage:"floor",floorLabel:"11/26 삼각단 위 · 11/27 바닥",ledFlag:1,ledLabel:"LED 2면 · 16:10 확인 · WUXGA×2 (SDI 불가)"})
+  +R(262,112,116,40,"flag")+T(320,130,"테이블 2000×1000×900","lbl flag-t")+T(320,145,"MacBook · RME UCX II","lbl")
+  +R(396,118,62,24,"flag")+T(427,134,"믹서 6/3","lbl flag-t")
+  +L(300,110,250,74,"sig","flag")+L(340,110,392,74,"sig","flag")+T(320,98,"HDMI ×2","lbl flag-t")
+  +L(458,134,496,180,"sig","ink")+T(482,152,"L·R·Sub","lbl","start"),
+ albert:()=>base({stage:"floor"})
+  +R(28,48,584,276,"haze",6)+T(600,316,"헤이저 · 공간 전체 짙게 (승인 필요)","lbl flag-t","end")
+  +R(294,118,52,26,"art")+T(320,135,"스탠드","lbl art-t")+T(356,128,"MacBook · 뇌파(BCI) · 카메라","lbl","start")
+  +L(320,116,320,62,"sig","flag")+T(312,96,"4K HDMI 롱","lbl flag-t","end")
+  +T(131,240,"103dB(A)","lbl flag-t")+T(509,240,"103dB(A)","lbl flag-t"),
+ lionclad:()=>base({stage:"floor"})
+  +R(250,116,48,40,"art")+T(274,170,"MPC 테이블","lbl art-t")+T(274,183,"60×60×(90→100)","lbl flag-t")
+  +R(330,116,62,40,"flag dashed")+T(361,170,"유시 테이블?","lbl flag-t")+T(361,140,"APC40 · DDJ","lbl")
+  +L(361,114,380,74,"sig","art")+T(392,100,"HDMI → LED","lbl","start")
+  +R(220,138,22,14,"flag")+T(214,150,"모니터?","lbl flag-t","end"),
+ ore:()=>base({stage:"tri"})
+  +R(196,98,52,52,"flag dashed")+T(222,128,"라이저 2.7","lbl flag-t")
+  +R(298,92,36,36,"flag dashed")+T(316,114,"1.8","lbl flag-t")+R(392,98,36,36,"flag dashed")+T(410,120,"1.8","lbl flag-t")
+  +[222,316,410].map(x=>C(x,150,6,"art")).join("")+T(320,153,"REEL 받침대 ×3","lbl art-t")
+  +[190,260,380,450].map(x=>R(x,166,22,10,"art")).join("")+T(320,180,"웨지 M6 ×4","lbl art-t")
+  +R(500,110,40,22,"flag")+T(520,125,"카메라","lbl flag-t")+L(500,120,474,96,"sig","flag")+T(548,146,"무선 HDMI","lbl flag-t","middle")
+  +T(160,52,"전원 USL·USC·USR 각 6구","lbl","start")
+  +R(384,326,60,30,"art")+T(414,345,"VJ","lbl art-t")+L(414,324,414,90,"sig dashed","art"),
+ ceremony:()=>base({stage:"tri"})
+  +R(150,160,340,22,"lsg")+T(320,175,"LSG 저연무 · 무대 앞 바닥에 깔림","lbl flag-t")
+  +C(390,118,8,"art")+T(402,122,"대표이사 (무선마이크)","lbl art-t","start")
+  +R(296,310,48,12,"flag")+T(352,320,"레이저 (객석 맨 뒤)","lbl flag-t","start")
+  +L(320,308,320,70,"beam","flag")+T(312,210,"LED에 포스터를 그림","lbl flag-t","end")
+};
+function planSVG(a){
+ const f=PLANS[a.id];if(!f)return "";
+ let svg=f().replace(/marker-end="url\(#ah-(\w+)\)"/g,`marker-end="url(#ah-$1-${a.id})"`);
+ return `<figure class="plan"><svg viewBox="0 0 640 400" role="img" aria-label="${esc(a.name)} 무대 위치">${DEFS(a.id)}${svg}</svg>
+ <figcaption><span><i class="k-art"></i>작가 장비·위치</span><span><i class="k-flag"></i>확인 필요</span><span><i class="k-sys"></i>공통 LED</span><span class="mono">개략도 · 축척 아님</span></figcaption></figure>`;
+}
+/* 신호 흐름: 박스 → 박스 */
+function flowSVG(a){
+ const cw=t=>[...t].reduce((n,c)=>n+(/[ㄱ-힝]/.test(c)?12:6.6),0)+18;
+ const rows=a.flow.map(r=>r[1].map(x=>Array.isArray(x)?x:[x,""]));
+ const H=rows.length*46+10;let W=0;
+ const body=rows.map((nodes,ri)=>{let x=70,y=10+ri*46,out=T(8,y+21,a.flow[ri][0],"lbl muted-t mono-t","start");
+  nodes.forEach((n,i)=>{const w=cw(n[0]);if(i){out+=L(x-22,y+16,x-3,y+16,"sig","ink");}
+   out+=R(x,y,w,32,n[1]==="art"?"art":n[1]==="flag"?"flag":"node",5)+T(x+w/2,y+20,n[0],"lbl "+(n[1]==="art"?"art-t":n[1]==="flag"?"flag-t":""));x+=w+26;});
+  W=Math.max(W,x);return out;}).join("");
+ return `<div class="scroll-x"><svg class="flowsvg" viewBox="0 0 ${W} ${H}" style="width:${W}px" role="img" aria-label="${esc(a.name)} 신호 흐름">${DEFS("f"+a.id)}${body.replace(/marker-end="url\(#ah-(\w+)\)"/g,`marker-end="url(#ah-$1-f${a.id})"`)}</svg></div>`;
+}
+/* 공연·리허설 타임라인 */
+function timelineSVG(){
+ const x0=96,ph=94,h0=13,X=t=>{const[h,m]=t.split(":").map(Number);return x0+(h+m/60-h0)*ph};
+ const rows=[
+  ["11/25 수",[["14:00","17:00","reh","개막식 리허설"],["18:00","19:00","reh","쿠로카와"],["19:00","20:00","reh","미리암"]]],
+  ["11/26 목",[["13:00","15:00","reh","최종 리허설"],["16:00","16:30","cer","개막식"],["16:30","16:45","chg",""],["16:45","17:10","show","미리암"],["17:10","17:20","chg",""],["17:20","17:45","show","쿠로카와"]]],
+  ["11/27 금",[["19:30","20:10","show","미리암"],["20:20","21:00","show","쿠로카와"],["21:00","22:00","reh","라이언"],["22:00","23:00","reh","알베르트"]]],
+  ["11/28 토",[["19:30","20:00","show","알베르트"],["20:10","20:40","show","라이언"]]],
+  ["12/4 금",[["16:00","19:00","set","ORE 셋업 (전시 중)"],["19:00","21:00","reh","ORE 리허설"]]],
+  ["12/5 토",[["19:30","20:45","show","ORE 75분"]]]
+ ];
+ let s="";const RH=44,top=28;
+ rows.forEach((r,i)=>{const y=top+i*RH;if(i%2===0)s+=R(0,y,x0+(23-h0)*ph+20,RH,"band",0);});
+ for(let h=h0;h<=23;h++){const x=x0+(h-h0)*ph;s+=L(x,top,x,top+rows.length*RH,"hour")+T(x,18,`${h}:00`,"cap");}
+ rows.forEach((r,i)=>{const y=top+i*RH;s+=L(0,y+RH,x0+(23-h0)*ph+20,y+RH,"rowline");s+=T(10,y+27,r[0],"lbl mono-t","start");
+  r[1].forEach(b=>{const x=X(b[0]),w=X(b[1])-x;s+=R(x+2,y+8,Math.max(w-4,3),RH-16,"tl-"+b[2],4);if(b[3])s+=T(x+w/2,y+26,b[3],"lbl tlt-"+b[2]);});});
+ s=L(0,top,x0+(23-h0)*ph+20,top,"rowline")+L(x0-6,top,x0-6,top+rows.length*RH,"rowline")+s;
+ const W=x0+(23-h0)*ph+20,H=top+rows.length*RH+4;
+ return `<div class="scroll-x"><svg class="tl" viewBox="0 0 ${W} ${H}" style="width:${W}px" role="img" aria-label="날짜별 공연과 리허설 시간">${s}</svg></div>
+ <div class="legend tl-leg"><span><i class="k-show"></i>공연</span><span><i class="k-cer"></i>개막식</span><span><i class="k-reh"></i>리허설</span><span><i class="k-set"></i>셋업</span><span><i class="k-chg"></i>무대 전환</span><span>11/26 공연 시각은 개막식 종료 기준 약</span></div>`;
+}
+/* ---------- team-facing render ---------- */
+const SHOWS=[
+ ["11/26 목","개막식 16:00","세레모니 3분30초 · 개막식 끝나면 전환 15분 후 바로 공연","리허설 11/25 10–12 테크 · 14–17 / 11/26 09–12 · 13–15"],
+ ["11/26 목","미리암 블로 → 료이치 쿠로카와","개막 퍼포먼스 각 20–25분, 사이 전환 10분","리허설 11/25 쿠로카와 18–19 · 미리암 19–20"],
+ ["11/27 금","미리암 19:30 · 쿠로카와 20:20","이브닝 각 40분","같은 날 21–23 라이언클래드·알베르트 리허설"],
+ ["11/28 토","알베르트 19:30 · 라이언클래드 & 유시 20:10","이브닝 25–30분 · 30분","리허설 11/27 라이언클래드 21–22 · 알베르트 22–23"],
+ ["12/5 토","에이와다 · 오픈 릴 앙상블 19:30–20:45","75분 · VJ 동행","12/4 셋업 16–19 · 리허설 19–21"]
+];
+const S2={crit:["p-todo","체크"],todo:["p-todo","체크"],wip:["p-wip","진행 중"],ok:["p-ok","확정"],info:["p-info","참고"]};
+const TEAMS=[
+ ["stage","무대 · 구조","무대단 · 테이블 · 받침대 · 샤막 · 동선"],
+ ["sound","음향","장비 대조 · 믹서 · 백라인 · 작가 회신"],
+ ["video","영상 · LED","신호 전송 · LED 조건 · 자막"],
+ ["light","조명 · 레이저 · 특효","연무 승인 · 레이저 · 조명도면 · 전기"],
+ ["ops","운영 · 일정","통역 · 인력 · 시간표 · 작가 회신"]
+];
+const CAT2TEAM={"무대":"stage","샤막":"stage","공간":"stage","음향":"sound","영상":"video","조명":"light","레이저":"light","연무":"light","전원":"ops","일정":"ops","운영":"ops","인력":"ops","전체":"ops","개막식":"ops"};
+const COMMONTEAM=c=>c[2].includes("연무")?"light":({"전기":"light","조명팀":"light","조명·레이저":"light","음향팀":"sound","승헌":"video","무대":"stage"})[c[1]]||"ops";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pill=s=>`<span class="pill ${S2[s][0]}">${S2[s][1]}</span>`;
+function row(s,short,req,now,src,who){
+  const more=(req?`<div><b>요구</b><span>${esc(req)}</span></div>`:"")+(now?`<div><b>현재</b><span>${esc(now)}</span></div>`:"")+`<div><b>근거</b><span class="mono">${esc(src)}</span></div>`;
+  return `<details class="row"><summary><span class="short">${who?`<span class="who">${esc(who)}</span>`:""}${esc(short)}</span><span class="src">${esc(src)}</span></summary><div class="more">${more}</div></details>`;
+}
+function srow(s,short,req,now,src,who){ // with status pill (artist cards)
+  const r=row(s,short,req,now,src,who);return r.replace('<span class="short">',`<span class="short">${pill(s)} `);
+}
+const RIDERLINKS=[
+ ["rider-myriam.html","https://drive.google.com/file/d/1MGvkYx3wyPn_q166pRw5kG7BTVCqkvnV/view"],
+ ["rider-kurokawa.html","https://drive.google.com/file/d/1ytDJvUhF_-QP1vwaEscxKmOYunnk7rE6/view"],
+ ["rider-albert.html","https://drive.google.com/file/d/1ULpoqG-eVmwwGmC31fcsnmohEIivKDd9/view"],
+ ["rider-lionclad.html","https://drive.google.com/file/d/1Cqox_XSYJ7pPqfSmLnSEkRpsTQrV_IYU/view"],
+ ["rider-ore.html","https://drive.google.com/file/d/1WTcx_eEs1xfYQ7uBlRP650sGhT0jw5D7/view"]
+];
+function groups(list){
+ const G=[["체크할 것",x=>x.s==="crit"||x.s==="todo","g-todo",true],["진행 중",x=>x.s==="wip","g-wip",true],["확정",x=>x.s==="ok","g-ok",false],["참고",x=>x.s==="info","g-info",false]];
+ return G.map(([name,f,cls,open])=>{const xs=list.filter(f);if(!xs.length)return "";
+  const body=`<div class="list">${xs.map(x=>row(x.s,x.short,x.req,x.now,x.src,x.who)).join("")}</div>`;
+  return open?`<div class="grp ${cls}"><div class="gh2">${name} <b>${xs.length}</b></div>${body}</div>`
+   :`<details class="grp ${cls}"><summary class="gh2">${name} <b>${xs.length}</b> <span class="car">▸</span></summary>${body}</details>`;}).join("");
+}
+$("#shows").innerHTML=timelineSVG();
+
+const tasks=[];
+COMMON.forEach(c=>{if(c[0]==="crit"||c[0]==="todo")tasks.push({o:ORDER[c[0]],team:COMMONTEAM(c),who:"공통",short:c[2],req:"",now:c[3],src:c[4]})});
+ARTISTS.forEach(a=>a.items.forEach(i=>{if(i[0]==="crit"||i[0]==="todo")tasks.push({o:ORDER[i[0]],team:CAT2TEAM[i[1]]||"ops",who:a.name,short:i[2],req:i[3],now:i[4],src:i[5]})}));
+tasks.sort((p,q)=>p.o-q.o);
+$("#artists").innerHTML=[...["ceremony","kurokawa-ex"].map(id=>ARTISTS.find(a=>a.id===id)),...ARTISTS.filter(a=>a.id!=="ceremony"&&a.id!=="kurokawa-ex")].map(a=>{
+ const its=[...a.items].sort((p,q)=>ORDER[p[0]]-ORDER[q[0]]);
+ const open=its.filter(i=>["crit","todo","wip"].includes(i[0])), done=its.filter(i=>["ok","info"].includes(i[0]));
+ const t=its.filter(i=>i[0]==="crit"||i[0]==="todo").length;
+ const flow=a.flow.map(r=>`<div class="flow-row"><span class="lbl">${r[0]}</span>${r[1].map((x,i)=>{const[tx,cl]=Array.isArray(x)?x:[x,""];return (i?`<span class="arrow">→</span>`:"")+`<span class="node ${cl}">${esc(tx)}</span>`}).join("")}</div>`).join("");
+ return `<details class="sub" id="${a.id}"><summary><span class="t">${esc(a.name)}<span class="w">${esc(a.work)}</span><span class="d">${esc(a.shows.join(" · "))}</span></span><span>${t?`<span class="pill p-todo">체크할 것 ${t}</span>`:""}</span><span class="car">▸</span></summary>
+ <div class="sub-b"><div class="meta"><span><b>리허설</b> ${esc(a.reh)}</span><span><b>작가 지참</b> ${esc(a.brings)}</span>${a.id!=="ceremony"?`<a href="rider-${a.id}.html"><b>테크라이더 보러가기 →</b></a>`:""}${a.rider[1]?`<a href="${a.rider[1]}" target="_blank" rel="noopener">원본: ${esc(a.rider[0])} ↗</a>`:`<span>${esc(a.rider[0])}</span>`}</div>
+ ${planSVG(a)}<div class="flow">${flowSVG(a)}</div>
+ ${groups(its.map(i=>({s:i[0],short:i[2],req:i[3],now:i[4],src:i[5]})))}</div></details>`}).join("");
+
+{const cs=[...COMMON].sort((p,q)=>ORDER[p[0]]-ORDER[q[0]]);
+ $("#artists").insertAdjacentHTML("beforeend",`<details class="sub common-card" id="common"><summary><span class="t">공통 · 전체 팀<span class="w">모든 공연에 걸린 것</span><span class="d">연무 승인 · 전기 · 통역 · 음향 대조 · 무대단 · 일정</span></span><span><span class="pill p-todo">체크할 것 ${cs.filter(c=>c[0]==="crit"||c[0]==="todo").length}</span></span><span class="car">▸</span></summary><div class="sub-b">${groups(cs.map(c=>({s:c[0],short:c[2],req:"",now:c[3],src:c[4],who:c[1]==="공통"?"":c[1]})))}</div></details>`);}
+let g=`<div class="gh"></div>`+GANTT_DAYS.map(d=>`<div class="gh">${d}</div>`).join("");
+GANTT.forEach(r=>{g+=`<div class="gl">${esc(r[0])}</div>`;let col=0;
+ r[1].forEach(b=>{if(b[0]>col)g+=`<div class="gc" style="grid-column:span ${b[0]-col}"></div>`;
+  g+=`<div class="gc" style="grid-column:span ${b[1]}"><div class="bar b-${b[2]}">${esc(b[3])}</div></div>`;col=b[0]+b[1];});
+ if(col<10)g+=`<div class="gc" style="grid-column:span ${10-col}"></div>`;});
+$("#gantt").innerHTML=g;
+$("#days").innerHTML=DAYS.map(d=>`<div class="day"><h4>${d[0]}</h4><ol>${d[1].map(x=>`<li class="${x[2]===1?"hl":x[2]===2?"warn":""}"><span class="mono">${esc(x[0])}</span><span>${esc(x[1])}</span></li>`).join("")}</ol></div>`).join("");
+$("#conf").innerHTML=CONF.map(c=>row("todo",c[0],"",c[1],"자료 비교")).join("");
+$("#c-conf").textContent=`${CONF.length}건`;
+$("#matrix").innerHTML=`<thead><tr><th>항목</th>${MATRIX.cols.map((c,i)=>`<th>${c}<small>${MATRIX.works[i]}</small></th>`).join("")}</tr></thead><tbody>`+`<tr class="rider-row"><th>테크라이더</th>${RIDERLINKS.map(l=>`<td><a class="rbtn" href="${l[0]}">테크라이더 보러가기 →</a>${l[1]?`<a class="orig-l" href="${l[1]}" target="_blank" rel="noopener">원본 ↗</a>`:""}</td>`).join("")}</tr>`+
+ MATRIX.rows.map(r=>`<tr><th>${r[0]}</th>${r[1].map(v=>{const f=Array.isArray(v)&&v[1]==="f";const t=Array.isArray(v)?v[0]:v;return `<td class="${f?"flag":t==="—"?"none":""}">${esc(t)}</td>`}).join("")}</tr>`).join("")+`</tbody>`;
+const li=a=>a.map(v=>`<li>${esc(v[0])} <span class="src">${v[1]}</span></li>`).join("");
+$("#system").innerHTML=li(SYSTEM);$("#venue").innerHTML=li(VENUE);$("#ops").innerHTML=li(OPS);
+$("#sources").innerHTML=SOURCES.map(s=>`<li>${s[1]?`<a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])} ↗</a>`:esc(s[0])}</li>`).join("");
+$("#log").innerHTML=LOG.map(l=>`<li><b class="mono">${l[0]}</b> — ${esc(l[1])}</li>`).join("");
+</script>
+
+</body></html>

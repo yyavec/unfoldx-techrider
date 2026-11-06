@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>에이와다 · 오픈 릴 앙상블 테크라이더 (번역)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#eef1f3;--panel:#fff;--ink:#15212b;--muted:#5f6d78;--line:#d6dde2;--soft:#e8ecef;--accent:#d98a00;--accent-ink:#7a4d00;--accent-soft:#fdf0d6;--sans:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161c;--panel:#17212a;--ink:#e6edf2;--muted:#9aa8b3;--line:#2a3743;--soft:#1f2b35;--accent:#f0a826;--accent-ink:#f6c86e;--accent-soft:#3a2c10;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161c;--panel:#17212a;--ink:#e6edf2;--muted:#9aa8b3;--line:#2a3743;--soft:#1f2b35;--accent:#f0a826;--accent-ink:#f6c86e;--accent-soft:#3a2c10;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+main{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+a{color:#2f6fb5}
+.back{font-size:.85rem}
+header h1{margin:6px 0 4px;font-size:clamp(1.4rem,4vw,1.9rem);line-height:1.3;text-wrap:balance}
+header h1 span{color:var(--accent-ink)}
+.meta{font-family:var(--mono);font-size:.75rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
+.note{background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:10px 14px;font-size:.85rem}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-width:0}
+section h2{margin:0 0 8px;font-size:1.05rem}
+section h3{margin:14px 0 6px;font-size:.95rem}
+ul,ol{margin:6px 0;padding-left:20px}
+li{margin:3px 0}
+.orig{color:var(--muted);font-size:.8rem;font-family:var(--mono)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{border-bottom:1px solid var(--soft);padding:7px 9px;text-align:left;vertical-align:top}
+thead th{background:var(--soft)}
+</style></head>
+<body><main>
+<a class="back" href="index.html">← 작가별 요구사항으로</a>
+<header><div class="meta"><span>UNFOLD X 2026 · 테크라이더 번역</span></div>
+<h1>에이와다 · 오픈 릴 앙상블 <span>MAGNETIZE</span></h1>
+<div class="meta"><span>원본: ORE // TECHRIDER // UNFOLD 2026.docx / 2026-10-30 수정본 (최신)</span><span>스테이지 플롯: [plot][2주차]MAGNETIZE - ORE_PLOT2026_noVJ_EN.pdf / 2026-10-15</span></div></header>
+<div class="note">원문을 한국어로 옮긴 참고용 번역입니다. 장비명·모델명·수치는 원문 그대로 두었습니다. 해석이 갈리는 곳은 원본을 기준으로 합니다.</div>
+
+<section>
+<h2>개요 <span class="orig">OPEN REEL ENSEMBLE (ORE) — TECHNICAL RIDER for UNFOLD 2026</span></h2>
+<p>OPEN REEL ENSEMBLE (ORE)<br>UNFOLD 2026 테크니컬 라이더</p>
+<p>공연장 사양과 페스티벌 제작 여건이 저마다 다르다는 점을 잘 알고 있습니다. 아래 요구사항 중 명시된 대로 충족하기 어려운 항목이 있다면 미리 연락 부탁드립니다. 가능한 범위에서 현실적인 대안을 기꺼이 함께 논의하겠습니다.</p>
+</section>
+
+<section>
+<h2>스테이지 플롯 (ver.2) <span class="orig">STAGE PLOT (ver.2)</span></h2>
+<p>PDF: <a href="https://drive.google.com/file/d/1viEZtVuXD293ZuAy3u3uIunuvn9Vv-63/view?usp=sharing">https://drive.google.com/file/d/1viEZtVuXD293ZuAy3u3uIunuvn9Vv-63/view?usp=sharing</a></p>
+<p>영상 연결 다이어그램: (원본 문서에 이미지로 첨부됨)</p>
+<h3>중요 — 관객 시야 확보 <span class="orig">IMPORTANT — AUDIENCE SIGHTLINES</span></h3>
+<p>퍼포머가 릴과 테이프를 손으로 직접 조작하는 모습 자체가 공연의 핵심 요소이므로, 관객의 시야가 막힘없이 확보되는 것이 반드시 필요합니다.</p>
+<p>단(높인 무대)이 있는 스테이지를 강하게 선호합니다. 다른 방법으로 충분한 가시성을 확보할 수 있다면 대안을 사전에 논의할 수 있습니다. 아래에 요청한 영상 프로젝션 시스템 역시 이를 위해 중요한 역할을 합니다.</p>
+<h3>무대 크기 (권장) <span class="orig">STAGE SIZE (PREFERRED)</span></h3>
+<p>약 7.5 m (W) × 4 m (D)</p>
+</section>
+
+<section>
+<h2>인풋 리스트 <span class="orig">INPUT LIST</span></h2>
+<div class="tbl"><table>
+<thead><tr><th>항목</th><th>수량 / 커넥터</th></tr></thead>
+<tbody>
+<tr><td>ORE 투어링 믹서의 스테레오 L/R 출력</td><td>2 × XLR</td></tr>
+<tr><td>마이크</td><td>3 채널</td></tr>
+</tbody></table></div>
+</section>
+
+<section>
+<h2>프로덕션 일정 <span class="orig">PRODUCTION TIMING</span></h2>
+<div class="tbl"><table>
+<thead><tr><th>구분</th><th>소요 시간</th></tr></thead>
+<tbody>
+<tr><td>반입 (Load-in)</td><td>약 30분</td></tr>
+<tr><td>무대 위 셋업</td><td>약 2.5–3시간</td></tr>
+<tr><td>사운드체크</td><td>약 30분</td></tr>
+<tr><td>리허설 (가능하다면 희망 시간)</td><td>1.5–2시간<br>※ 시간이 부족하면 45분~1시간도 괜찮습니다.</td></tr>
+<tr><td>무대 위 철수 (Pack-down)</td><td>약 90분</td></tr>
+<tr><td>반출 (Load-out)</td><td>약 30분</td></tr>
+</tbody></table></div>
+<p>반입/반출 시간은 반입·반출 동선과 차량 진입 지점에서 백스테이지까지의 거리에 따라 달라질 수 있습니다.</p>
+<p>차량에서 무대/백스테이지까지 장비를 옮길 수 있도록 가능하다면 카트(트롤리) 4대를 준비해 주세요. 약 70 cm × 50 cm 크기가 이상적입니다. 첨부된 참고 사진을 확인해 주세요.</p>
+</section>
+
+<section>
+<h2>현지 제공 장비 <span class="orig">EQUIPMENT TO BE PROVIDED LOCALLY</span></h2>
+<h3>음향 / 조명 / 영상 <span class="orig">AUDIO / LIGHTING / VIDEO</span></h3>
+<ul>
+<li>공연장 규모에 맞는 전문 PA 시스템 (서브우퍼 포함), FOH 엔지니어 포함</li>
+<li>전문 조명 시스템, 오퍼레이터 포함</li>
+<li>영상 프로젝션 시스템, 오퍼레이터 포함</li>
+<li>라이브 카메라 영상 송출용으로, 무대 중앙에서 공연장 영상 시스템으로 들어가는 HDMI 입력 연결</li>
+</ul>
+<h3>레코더용 받침대 <span class="orig">PEDESTALS for RECORDERS</span></h3>
+<ul>
+<li>검정색 장비 받침대(페데스탈) ×3 — REEL-1, REEL-4, REEL-5용</li>
+</ul>
+<p>첨부/링크된 도면에 따라 현지에서 제작해 주세요.</p>
+<p>PDF: <a href="https://drive.google.com/file/d/1e8NzHCJzzuOKp4PYqGuJakPottW-0MHm/view?usp=sharing">https://drive.google.com/file/d/1e8NzHCJzzuOKp4PYqGuJakPottW-0MHm/view?usp=sharing</a></p>
+<p>참고 사진: (원본 문서에 첨부됨)</p>
+<p>사진은 이전 버전입니다. 현재 도면과 치수가 약간 다르지만, 구조는 기본적으로 동일합니다.</p>
+<h3>기타 무대 장비 <span class="orig">OTHER STAGE EQUIPMENT</span></h3>
+<div class="tbl"><table>
+<thead><tr><th>장비</th><th>수량</th><th>비고</th></tr></thead>
+<tbody>
+<tr><td>모니터 스피커 (웨지)</td><td>×4</td><td></td></tr>
+<tr><td>Shure SM58 마이크</td><td>×5</td><td></td></tr>
+<tr><td>롱 붐 마이크 스탠드</td><td>×10</td><td>마이크용, 소형 키보드 거치용, 테이프 연장 지지용 (예비 1대 포함)</td></tr>
+<tr><td>18" 미디엄 크래시 심벌</td><td>×1</td><td>Zildjian 또는 동급</td></tr>
+<tr><td>붐 심벌 스탠드</td><td>×3</td><td></td></tr>
+<tr><td>심벌 스탠드 고정용 스테이지 웨이트</td><td>×3</td><td></td></tr>
+</tbody></table></div>
+<h3>케이블 <span class="orig">CABLES</span></h3>
+<ul>
+<li>현지 프로덕션 셋업에 필요한 모든 오디오 및 전원 케이블</li>
+<li>SDI 케이블 (무대 → FOH / 무대 쪽으로 약 10m 여유 길이)</li>
+<li>HDMI 케이블 10m</li>
+<li>VJ용 XLR 케이블: 모노 및 스테레오</li>
+<li>예비 XLR 케이블: 5 m ×2 / 3 m ×2</li>
+<li>예비 1/4" TS 케이블: 5 m ×4 / 3 m ×4</li>
+</ul>
+</section>
+
+<section>
+<h2>기술 요구사항 및 참고 — 무대 <span class="orig">TECHNICAL REQUIREMENTS &amp; NOTES — STAGE</span></h2>
+<ul>
+<li>야외 공연: 무대와 장비는 비로부터 충분히 보호되어야 합니다. 장비가 비에 직접 노출되는 경우 공연할 수 없습니다.</li>
+<li>셋업 시작 전에 전원과 현지 제공 장비 일체가 준비되어 사용 가능한 상태여야 합니다.</li>
+<li>셋업 시작 시점부터 투어 팀을 위한 식수를 제공해 주세요.</li>
+</ul>
+</section>
+
+<section>
+<h2>전원 <span class="orig">POWER</span></h2>
+<ul>
+<li>장비 준비에 필요하므로, 공연장의 전원 전압·주파수·콘센트 형태를 사전에 확인해 주세요.</li>
+<li>장비 조립·테스트·준비를 위해 백스테이지 전원이 필요합니다.</li>
+<li>무대 전원은 업스테이지 좌측, 업스테이지 우측, 업스테이지 중앙 세 곳에 제공해 주세요. 총 소요 전력: 약 2 kW.</li>
+<li>일본 100 V 장비(1.5 kW)용 변압기는 ORE가 직접 지참합니다.</li>
+</ul>
+</section>
+
+<section>
+<h2>사운드 <span class="orig">SOUND</span></h2>
+<p>전체 사운드는 파워풀하고 임팩트 있어야 합니다.<br>비트의 킥이 서브우퍼를 통해 제대로 보강되도록 해 주세요.<br>귀에 거슬리거나 피로감을 주는 대역이 있다면 필요에 따라 EQ를 조정해, 전체적으로 파워풀하면서도 듣기 편한 사운드를 유지해 주세요.</p>
+<p>아래 Studio Live 레퍼런스 영상을 참고해 주세요.</p>
+</section>
+
+<section>
+<h2>조명 <span class="orig">LIGHTING</span></h2>
+<p>Open Reel Ensemble은 무대 위에서 오픈 릴 기기를 직접 조작하며 공연합니다. 몽환적이고 몰입감 있는 조명은 환영하지만, 퍼포머의 손과 동작이 관객과 카메라 모두에게 분명히 보이도록 해 주세요.</p>
+<p>아래 조명 레퍼런스 영상을 기준으로, 심플하고 미니멀한 접근의 대담하고 샤프하며 차가운(쿨톤) 조명을 선호합니다. 과도한 색 사용, 지나치게 많은 시각 요소, 너무 정신없는 플래싱 패턴은 피해 주세요.</p>
+<p>특히 백라이트를 효과적으로 활용하는 것을 권장합니다. 곡에 어울린다면 스트로브, 헤이즈/스모크, 레이저도 환영합니다.</p>
+<p><a href="https://drive.google.com/file/d/1rhHw5fFKPqKyoyvJvKLMjO7-mtQnjiyX/view?usp=sharing">영상 레퍼런스 (VIDEO REFERENCE)</a></p>
+</section>
+
+<section>
+<h2>영상 / 라이브 카메라 <span class="orig">VIDEO / LIVE CAMERA</span></h2>
+<p>라이브 카메라 프로젝션은 ORE 공연의 시각 연출에서 빠질 수 없는 요소입니다. 릴과 테이프를 직접 조작하는 독특한 모습을 전달해, 공연 전체를 더 강렬하고 시각적으로 임팩트 있게 만들어 줍니다. 따라서 가능한 한 라이브 카메라 프로젝션을 반영해 주시기를 요청드립니다.</p>
+<h3>투어 카메라 셋업 <span class="orig">TOURING CAMERA SETUP</span></h3>
+<p>전담 카메라 오퍼레이터와 카메라 장비를 동반해 싱글 카메라 셋업으로 공연합니다.</p>
+<p><a href="https://drive.google.com/file/d/1rhHw5fFKPqKyoyvJvKLMjO7-mtQnjiyX/view?usp=sharing">영상 레퍼런스 (VIDEO REFERENCE)</a></p>
+<h3>영상 전송 <span class="orig">VIDEO TRANSMISSION</span></h3>
+<ul>
+<li>자체 보유한 일반 소비자용(컨슈머급) 무선 영상 전송 시스템을 지참합니다.</li>
+<li>공연장 환경 때문에 무선 시스템이 안정적으로 작동하지 않을 경우, Plan B로 유선 연결로 전환합니다.</li>
+<li>무선 영상 전송에는 Accsoon <strong>CineView Master 4K SDI &amp; HDMI</strong>를 사용합니다.</li>
+<li>지연을 최소화하기 위해 1080p/30 또는 1080p/60으로 운용할 예정입니다.</li>
+<li>이 시스템은 2.4 GHz + 5 GHz + 6 GHz 대역으로 전송하며, 지연은 약 25 ms, 최대 전송 거리는 이상적인 조건에서 최대 2,500 m입니다.</li>
+</ul>
+<h3>영상 재생 / 스위칭 <span class="orig">VIDEO PLAYBACK / SWITCHING</span></h3>
+<p>공연 중 사전 제작된 영상 소스를 사용할 수도 있습니다. 영상 프로젝션이 가능한 경우, 영상 재생 및 스위칭을 담당할 오퍼레이터를 배정해 주세요.</p>
+</section>
+
+<section>
+<h2>레퍼런스 영상 <span class="orig">REFERENCE VIDEOS</span></h2>
+<h3>스튜디오 라이브 <span class="orig">Studio Live</span></h3>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=i-6WfT8RAh4">https://www.youtube.com/watch?v=i-6WfT8RAh4</a></li>
+<li><a href="https://www.youtube.com/watch?v=hm_VsGgy-lE">https://www.youtube.com/watch?v=hm_VsGgy-lE</a></li>
+</ul>
+<h3>라이브 공연 #1 — 조명 레퍼런스 <span class="orig">Live Performance #1 — Lighting Reference</span></h3>
+<ul>
+<li><a href="https://drive.google.com/file/d/1rhHw5fFKPqKyoyvJvKLMjO7-mtQnjiyX/view">https://drive.google.com/file/d/1rhHw5fFKPqKyoyvJvKLMjO7-mtQnjiyX/view</a></li>
+<li><a href="https://youtu.be/-yMEGU-Vm_M">https://youtu.be/-yMEGU-Vm_M</a></li>
+</ul>
+<h3>라이브 공연 #2 — 영상 프로젝션 레퍼런스 <span class="orig">Live Performance #2 — Video Projection Reference</span></h3>
+<ul>
+<li><a href="https://drive.google.com/file/d/1rhHw5fFKPqKyoyvJvKLMjO7-mtQnjiyX/view">https://drive.google.com/file/d/1rhHw5fFKPqKyoyvJvKLMjO7-mtQnjiyX/view</a></li>
+</ul>
+</section>
+
+<section>
+<h2>연락처 <span class="orig">CONTACT</span></h2>
+<p>매니지먼트 / 프로덕션 담당: Sampei Yamaguchi</p>
+<p class="orig">Open Reel Ensemble (ORE) — Technical Rider 2026–2027</p>
+</section>
+
+<section>
+<h2>스테이지 플롯 도면 (2주차 · 10/15) <span class="orig">ORE_PLOT2026_VJ無_EN (noVJ)</span></h2>
+<p>무대 크기: W7500 × D4000 (mm)</p>
+<h3>빨간색 = 현지 준비 장비 <span class="orig">RED = EQUIPMENTS TO BE PREPARED LOCALLY</span></h3>
+<ul>
+<li>검정 받침대(페데스탈) ×3 (REEL-1, 4, 5용)</li>
+<li>모니터 스피커 ×4</li>
+<li>마이크 SHURE SM58 ×5</li>
+<li>마이크 스탠드 (롱 붐 타입) ×10 (키보드 거치용 및 예비 포함)</li>
+<li>크래시 심벌 18” 미디엄 (예: Zildjian) ×1</li>
+<li>크래시 심벌 스탠드 (붐 타입) ×3</li>
+<li>심벌 스탠드용 웨이트 ×3</li>
+<li>이동식 라이저 ×3</li>
+<li>디지털 비디오 포트 (HDMI)</li>
+<li>HDMI 케이블 (무대 쪽으로 약 10m 여유 길이)</li>
+<li>Plan B용: HDMI 케이블 15m</li>
+</ul>
+<h3>도면 표기 요소 <span class="orig">Plot labels</span></h3>
+<div class="tbl"><table>
+<thead><tr><th>구분</th><th>도면 표기 (번역)</th></tr></thead>
+<tbody>
+<tr><td>퍼포머</td><td>EI WADA, HARUKA YOSHIDA, YOSHIDA MASARU, 실시간 영상 촬영자 (REAL-TIME VIDEOGRAPHER)</td></tr>
+<tr><td>릴 기기</td><td>REEL-1, REEL-2, REEL-3, REEL-4, REEL-5, REEL-6 (TEAC 33-8)</td></tr>
+<tr><td>받침대</td><td>BLACK PEDESTAL (검정 받침대) — REEL-1 위치 등</td></tr>
+<tr><td>믹서</td><td>메인 믹서 ZOOM L-20 (REEL-6 옆) / 서브 믹서 (원본 PDF 텍스트 일부 깨짐, ZOOM L-12로 판독)</td></tr>
+<tr><td>라이저</td><td>1800 x 1800 ×2, 2700 x 2700 ×1</td></tr>
+<tr><td>전원</td><td>POWER 6구 ×3곳</td></tr>
+<tr><td>마이크</td><td>MC (MC용 마이크) ×3, MIC → REEL-4, MIC → REEL-1</td></tr>
+<tr><td>오디오 출력</td><td>STEREO XLR (메인 믹서 출력), → SUB MIXER</td></tr>
+<tr><td>영상</td><td>DIGITAL VIDEO PORT (HDMI) 1920x1080p / 무선 송신기 &amp; 수신기 (Wireless transmitter &amp; receiver) / HDMI 케이블 약 10m / Plan B: 유선 HDMI 15m</td></tr>
+<tr><td>기타</td><td>CYMBAL (심벌) ×2 위치, REEL CASE (릴 케이스) ×2</td></tr>
+</tbody></table></div>
+<p class="orig">참고: 이 도면(10/15)은 라이더 본문(10/30)보다 이전 버전으로, 영상 연결이 HDMI 기준으로 표기되어 있습니다. 라이더 본문에는 SDI 케이블(무대 → FOH)도 요청되어 있습니다.</p>
+</section>
+</main></body></html>
