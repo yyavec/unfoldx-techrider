@@ -326,6 +326,10 @@ svg .band{fill:var(--bg)} svg .rowline{stroke:var(--line);stroke-width:1} svg .h
  .ctg>span{width:auto}
 }
 
+.toplinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.tbtn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;background:var(--ink);color:var(--panel);font-weight:700;font-size:.92rem;text-decoration:none}
+.tbtn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.tbtn:hover{filter:brightness(1.1)}
 </style>
 
 </head><body>
@@ -337,6 +341,7 @@ svg .band{fill:var(--bg)} svg .rowline{stroke:var(--line);stroke-width:1} svg .h
       <div class="stamp">업데이트 11/08</div>
     </div>
     <p class="howto">한 표에 다섯 팀의 요구사항을 모았습니다. 아래 작가별 칸을 누르면 그림, 신호 흐름, 체크할 것이 나옵니다.</p>
+    <div class="toplinks"><a class="tbtn" href="https://yyavec.github.io/unfoldx-techrider/check.html" target="_blank" rel="noopener">✓ 시스템팀 체크리스트 →</a><a class="tbtn ghost" href="https://yyavec.github.io/unfoldx-techrider/check.html#cue" target="_blank" rel="noopener">큐시트 원본 보기</a></div>
   </header>
 
   <section class="hero">
