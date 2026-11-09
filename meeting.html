@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>언폴드엑스 시스템 회의</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--ink:#252525;--muted:#6f7378;--line:#e3e5e8;--soft:#f4f5f7;--bg:#d9dce0;
+ --ok:#1f8a5b;--ok-s:#e2f4ea;--wip:#2f6fb5;--wip-s:#e3edf9;--chk:#c2410c;--chk-s:#fdebe1;--acc:#d98a00;--acc-s:#fdf0d6;
+ --snd:#2f8ff0;--lgt:#f5a623;--fx:#22a35a;--lsr:#13b5e8;--vid:#8b5cf6;--str:#1f2a44;--set:#b08960;--pwr:#c2410c;
+ font-family:Pretendard,"Pretendard Variable",-apple-system,"Apple SD Gothic Neo",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hidden}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#canvas{width:1600px;height:900px;position:relative;transform-origin:center center;flex:none}
+.slide{position:absolute;inset:0;background:#fff;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.18);padding:56px 72px 64px;display:none;flex-direction:column;gap:22px;overflow:hidden}
+.slide.on{display:flex}
+.num{font-size:15px;color:var(--muted);letter-spacing:.06em;font-weight:500}
+h1{font-size:60px;font-weight:600;margin:0;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:44px;font-weight:600;margin:0;letter-spacing:-.02em;line-height:1.15;display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+h2 small{font-size:22px;font-weight:500;color:var(--muted);letter-spacing:0}
+.sub{font-size:20px;color:var(--muted);margin-top:-12px}
+/* cover */
+.cover{justify-content:center;gap:40px;padding-left:120px}
+.cover .ag{display:flex;flex-direction:column;gap:18px}
+.cover .ag div{font-size:40px;font-weight:500;display:flex;gap:22px;align-items:baseline}
+.cover .ag b{font-size:22px;color:var(--muted);font-weight:500;min-width:28px}
+.cover .ag span.me{color:var(--acc)}
+.cover .ag small{font-size:20px;color:var(--muted)}
+/* image slides */
+.imgwrap{flex:1;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.imgwrap img{display:block;width:100%;height:auto}
+.hint{font-size:14px;color:var(--muted)}
+/* text slide */
+.items{display:flex;flex-direction:column;gap:26px;margin-top:10px}
+.items .r{display:grid;grid-template-columns:150px 1fr;gap:24px;font-size:30px;align-items:baseline}
+.items .r b{font-weight:600}
+.items .r span{color:#333}
+.items .r small{display:block;font-size:22px;color:var(--muted);margin-top:6px}
+/* overview table */
+table.ov{border-collapse:collapse;width:100%;font-size:22px}
+table.ov th{font-size:16px;color:var(--muted);font-weight:500;text-align:left;padding:10px 14px;border-bottom:2px solid var(--ink)}
+table.ov td{padding:16px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.ov td.n{font-weight:600;font-size:24px}
+table.ov td.n small{display:block;font-size:15px;color:var(--muted);font-weight:500;margin-top:3px;letter-spacing:.04em}
+table.ov .f{color:var(--chk);font-weight:600}
+.foot{margin-top:auto;font-size:17px;color:var(--muted)}
+.toc{display:flex;gap:10px;flex-wrap:wrap}
+.toc span{font-size:16px;padding:6px 12px;border-radius:999px;background:var(--soft)}
+/* timeline */
+.tl{position:relative;margin-top:6px}
+.tl .ax{position:relative;height:28px;margin-left:150px}
+.tl .ax span{position:absolute;font-size:15px;color:var(--muted);transform:translateX(-50%)}
+.tl .row{display:flex;align-items:center;height:78px;border-top:1px solid var(--line)}
+.tl .row:last-child{border-bottom:1px solid var(--line)}
+.tl .d{width:150px;font-size:22px;font-weight:600;flex:none}
+.tl .d small{display:block;font-size:14px;color:var(--muted);font-weight:500}
+.tl .tr{position:relative;flex:1;height:100%}
+.tl .tr .g{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+.tl .b{position:absolute;top:14px;bottom:14px;border-radius:8px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 6px;white-space:nowrap;overflow:hidden;line-height:1.15;text-align:center}
+.tl .b.show{background:var(--ink);color:#fff}
+.tl .b.cer{background:var(--acc);color:#fff}
+.tl .b.reh{background:#fff;border:2px dashed var(--ink);color:var(--ink)}
+.tl .b.set{background:var(--soft);border:1px solid #c9cdd2;color:var(--ink)}
+.tl .b.chg{background:var(--chk-s);color:var(--chk);font-size:12px}
+.tl .note{position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted)}
+.legend{display:flex;gap:22px;font-size:16px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:18px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* artist */
+.grid{display:grid;grid-template-columns:330px 1fr 400px;gap:26px;flex:1;min-height:0}
+.facts{display:flex;flex-direction:column;gap:12px}
+.fact{background:var(--soft);border-radius:12px;padding:14px 18px}
+.fact em{display:block;font-style:normal;font-size:14px;color:var(--muted);margin-bottom:4px;letter-spacing:.04em}
+.fact b{font-size:20px;font-weight:600;line-height:1.35;display:block}
+.fact span{font-size:16px;line-height:1.45;display:block;color:#333}
+.req{display:flex;flex-direction:column;gap:0;min-height:0}
+.req .h{font-size:15px;color:var(--muted);letter-spacing:.04em;margin-bottom:8px}
+.rq{display:grid;grid-template-columns:96px 1fr 86px;gap:14px;align-items:start;padding:11px 0;border-top:1px solid var(--line)}
+.rq:last-child{border-bottom:1px solid var(--line)}
+.tm{display:inline-flex;align-items:center;justify-content:center;height:30px;border-radius:7px;font-size:15px;font-weight:700;color:#fff;background:var(--c)}
+.rq p{margin:0;font-size:18px;line-height:1.45}
+.rq p small{display:block;font-size:15px;color:var(--muted);margin-top:2px}
+.st{font-size:14px;font-weight:700;padding:4px 0;border-radius:999px;text-align:center}
+.st.ok{background:var(--ok-s);color:var(--ok)}.st.wip{background:var(--wip-s);color:var(--wip)}.st.chk{background:var(--chk-s);color:var(--chk)}.st.na{background:var(--soft);color:var(--muted)}
+.dec{background:var(--chk-s);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:10px}
+.dec .h{font-size:20px;font-weight:700;color:var(--chk)}
+.dec ol{margin:0;padding-left:24px;display:flex;flex-direction:column;gap:10px}
+.dec li{font-size:18px;line-height:1.4}
+.dec li small{display:block;font-size:15px;color:#7a4a32}
+/* common */
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;flex:1;min-height:0}
+.cc{border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.cc .tm{align-self:flex-start;padding:0 12px}
+.cc ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.cc li{font-size:18px;line-height:1.4}
+.cc li small{display:block;font-size:14px;color:var(--muted)}
+.cc li.k{color:var(--chk);font-weight:600}
+/* nav */
+#bar{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:10px;padding:8px max(14px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));background:rgba(37,37,37,.86);color:#fff;font-size:14px;transition:opacity .3s;z-index:5}
+#bar button,#bar a{font:inherit;color:#fff;background:rgba(255,255,255,.12);border:0;border-radius:8px;padding:7px 12px;cursor:pointer;text-decoration:none}
+#bar .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+#bar .c{font-variant-numeric:tabular-nums;opacity:.85}
+body.idle #bar{opacity:0}
+#menu{position:fixed;left:14px;bottom:56px;background:#fff;color:var(--ink);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.25);padding:8px;display:none;flex-direction:column;max-height:70vh;overflow:auto;z-index:6;min-width:280px}
+#menu.on{display:flex}
+#menu button{font:inherit;font-size:15px;text-align:left;padding:9px 12px;border:0;background:none;border-radius:8px;cursor:pointer;color:var(--ink)}
+#menu button:hover,#menu button.cur{background:var(--soft)}
+</style></head><body>
+<div id="stage"><div id="canvas">
+
+<!-- 1. 표지 -->
+<section class="slide cover" data-t="언폴드엑스 회의 아젠다">
+  <div class="num">UNFOLD X 2026 · 문화역서울284 메인홀 · 시스템 회의</div>
+  <h1>언폴드엑스 회의 아젠다</h1>
+  <div class="ag">
+    <div><b>1.</b>일정<small>셋업 일정 · 공연 일정 · 철거 일정</small></div>
+    <div><b>2.</b>무대<small>구조물 · 세트 · 음향 · 레이저 · 영상 · 특효</small></div>
+    <div><b>3.</b><span class="me">공연</span><small>작가별 시스템 요구사항 · 정할 것</small></div>
+  </div>
+</section>
+
+<!-- 2. 일정 -->
+<section class="slide" data-t="1. 일정 — 시스템(메인홀) 일정">
+  <h2>1. 일정 <small>셋업 · 공연 · 철거</small></h2>
+  <div class="imgwrap"><img src="deck/schedule.png" alt="2026 언폴드엑스 시스템(메인홀) 일정 11/23–12/6"></div>
+  <div class="hint">표 안에서 스크롤하면 아래 날짜가 보여요</div>
+</section>
+
+<!-- 3. 바닥 달력 -->
+<section class="slide" data-t="1. 일정 — 무대 바닥 설치·철거 달력">
+  <h2>1. 일정 <small>무대 바닥 설치 · 철거</small></h2>
+  <div class="imgwrap" style="display:flex;justify-content:center"><img src="deck/floor.png" alt="언폴드엑스 무대 바닥 설치·철거 달력" style="width:auto;max-width:100%;height:100%;object-fit:contain"></div>
+</section>
+
+<!-- 4. 무대 -->
+<section class="slide" data-t="2. 무대">
+  <h2>2. 무대</h2>
+  <div class="items">
+    <div class="r"><b>구조물</b><span>변경사항 체크<small>FOH 폭, 키라이트 트러스 위치 변경 / 메인무대 1000씩 올림</small></span></div>
+    <div class="r"><b>세트</b><span>바닥 제작 (600h), 흑막 마감 (고시, LED 밑)<small>바닥 마감재 (파인텍스 or 데코타일)</small></span></div>
+    <div class="r"><b>음향</b><span>PA 위치 확인</span></div>
+    <div class="r"><b>레이저</b><span>레이저 설치 위치 및 종류와 개수</span></div>
+    <div class="r"><b>영상</b><span>셋업 협의</span></div>
+    <div class="r"><b>특효</b><span>특효 품목 확인 및 셋업 협의사항</span></div>
+    <div class="r"><b>팀 공통</b><span>적재 위치 확인</span></div>
+  </div>
+</section>
+
+<!-- 5. 공연 개요 -->
+<section class="slide" data-t="3. 공연 — 5팀 한눈에">
+  <h2>3. 공연 <small>메인홀 무대 퍼포먼스 5팀 · 11/26 – 12/5</small></h2>
+  <table class="ov">
+    <thead><tr><th>작가 · 작품</th><th>공연</th><th>리허설</th><th>셋업</th><th>시스템 핵심</th></tr></thead>
+    <tbody>
+      <tr><td class="n">미리암 블로<small>HYPERMOBILITY</small></td><td>11/26 17:00 (20분)<br>11/27 19:30 (40분)</td><td>11/25 19–20</td><td class="f">2h vs 슬롯 1h</td><td>레이저 · 샤막 · 스모크 · 완전 암전</td></tr>
+      <tr><td class="n">료이치 쿠로카와<small>nD</small></td><td>11/26 17:30 (20분)<br>11/27 20:20 (40분)</td><td>11/25 18–19</td><td>1h</td><td>LED 2면 WUXGA · 2.1ch · 무대 믹서</td></tr>
+      <tr><td class="n">알베르트 바르케 두란<small>SYNAPTICON</small></td><td>11/28 19:30 (30분)</td><td class="f">11/27 22–23*</td><td>30분</td><td>4K HDMI · 103dB · 헤이저</td></tr>
+      <tr><td class="n">라이언클래드 & 유시<small>라이브 셋 + 비주얼</small></td><td>11/28 20:10 (30분)</td><td class="f">11/27 21–22*</td><td>1h</td><td>스테이지 믹서·DI · 모니터 1 · HDMI</td></tr>
+      <tr><td class="n">에이와다 · ORE<small>MAGNETIZE</small></td><td>12/5 19:30–20:45 (75분)</td><td>12/4 19–21</td><td class="f">12/4 16–19 (전시 중)</td><td>백라인 · 마이크 3ch · 카메라 · 받침대 3</td></tr>
+    </tbody>
+  </table>
+  <div class="foot">* 큐시트(11/7)엔 라이언클래드·알베르트 리허설이 둘 다 21:10 시작으로 적혀 있음 — 확정 필요 &nbsp;·&nbsp; 기준: 테크라이더, 큐시트 11/7, 시스템 일정표 11/5</div>
+</section>
+
+<!-- 6. 일정 타임라인 -->
+<section class="slide" data-t="3-1. 공연 · 리허설 일정">
+  <h2>3-1. 공연 · 리허설 일정 <small>16:00 – 23:00</small></h2>
+  <div class="tl" id="tl"></div>
+  <div class="legend"><span><i style="background:var(--ink)"></i>공연</span><span><i style="background:var(--acc)"></i>개막식</span><span><i style="border:2px dashed var(--ink)"></i>리허설</span><span><i style="background:var(--soft);border:1px solid #c9cdd2"></i>셋업·설치</span><span><i style="background:var(--chk-s)"></i>전환</span></div>
+  <div class="foot">오전 작업: 11/28 09–11 트러스·트러스 LED·샤막·이탈기 철거 · 12/4 09–11 무대단 재설치 · 12/6 09–11 무대단 철수 &nbsp;·&nbsp; 11/26 공연은 전환 끝나는 대로 바로 시작</div>
+</section>
+
+</div></div>
+<div id="bar"><button id="mb" aria-label="목차">☰</button><button id="pv" aria-label="이전">◀</button><button id="nx" aria-label="다음">▶</button><span class="c" id="ct"></span><span class="t" id="tt"></span><button id="fs">전체화면</button><a href="./">메인</a></div>
+<div id="menu"></div>
+<script>
+/* 작가 슬라이드 */
+const TC={음향:"--snd",조명:"--lgt",특효:"--fx",레이저:"--lsr",영상:"--vid",무대:"--set",전원:"--pwr",인력:"--str"};
+const ST={ok:"확정",wip:"진행 중",chk:"확인",na:"해당 없음"};
+const ARTISTS=[
+ {n:"3-2",name:"미리암 블로",work:"HYPERMOBILITY · 레이저 + 샤막",
+  facts:[["공연","11/26 17:00 · 20분","전환(16:41–17:00) 끝나는 대로 바로\n11/27 19:30–20:10 · 40분"],["리허설","11/25 19:00–20:00","샤막 이탈 연습 포함"],["셋업","2시간 필요 (슬롯 1시간)","설치 30 + 레이저 캘리브레이션 45 + 사운드체크 45. 레이저는 11/24에 미리 셋업"],["작가 지참","노트북 · 사운드카드 · ILDA 컨트롤러 · 전원 어댑터",""]],
+  req:[["음향","TRS 2 → DI 2 (또는 스테레오 DI 1) · M4 + 서브 · 모니터 M6 ×2","사운드카드→DI TRS 케이블 2도 주최 측","wip"],
+       ["조명","완전 암전, 퍼포머는 아주 약하게","전시 작은 LED 소등 범위 같이 결정","chk"],
+       ["특효","스모크 1–2대 객석 쪽 — 객석 공간 전체를 채움","샤막: 폭 10m 투명, 트러스 이탈장치 2회 낙하 · 11/26 19–20 재설치 · 11/28 09–11 철거","chk"],
+       ["레이저","RGB 10–12W 갈보 · ILDA · 40kpps@8° · 풀 아날로그 · 스캔각 60°","샤막까지 6.2m (작가 OK) · 높이 2–3m · 에이포인트","chk"],
+       ["영상","— (레이저 작품)","트러스 가리는 가로 LED는 확정","ok"],
+       ["무대","작은 테이블 0.75×0.75 · 무대 위 다른 장비 안 보이게","쿠로카와 테이블 대기 위치","chk"],
+       ["전원","무대 2구 이상","컴퓨터 · 사운드카드 · 레이저","wip"]],
+  dec:[["연무 사용 승인","284 안전팀 · 감지기 OFF 범위"],["샤막 최종 높이","4,400 vs 5,100 (폭 10m)"],["샤막 이탈 시간","11/26 16:41–17:00 · 11/27 19:00–19:10"],["10W 레이저 3대 중 미리암용 몇 대",""],["레이저 높이 vs 재단 촬영 카메라","2.7m 이상 카메라 금지"]]},
+ {n:"3-3",name:"료이치 쿠로카와",work:"nD (라이브)",
+  facts:[["공연","11/26 17:30 · 20분","미리암 후 전환 10분\n11/27 20:20–21:00 · 40분"],["리허설","11/25 18:00–19:00",""],["셋업","1시간",""],["작가 지참","MacBook · RME UCX II",""]],
+  req:[["음향","2.1ch, 30–120Hz · UCX II → TRS 6 → 무대 믹서 → PA 롱 케이블 3","무대 믹서 6in/3out (Mackie 1642VLZ4급) — 장비 목록에 없음","chk"],
+       ["영상","HDMI ×2 · WUXGA 1920×1200 네이티브 · 3G-SDI 불가","EDID 패스스루 익스텐더 / 광 / HDBaseT · USB-C→HDMI 어댑터 1","chk"],
+       ["영상","LED 2면 16:10 조건 확인","메인 2496×1536 (비율 1.625) — 스케일링 작가 확인","chk"],
+       ["조명","라이더에 언급 없음","","na"],
+       ["무대","테이블 2000×1000×900","미확보 — 대안 16cm 낮음 · 무대 8×4×4m","chk"],
+       ["전원","무대 3구 이상, F형 · 100–240V","","wip"]],
+  dec:[["WUXGA 2라인 전송 방식","영상팀 (3G-SDI 불가)"],["무대 믹서 6in/3out 확보","음향팀"],["작가 음향 스펙 질문 회신","SQ7 · M4×4 · M6×4 · CODA×2로 회신 가능"],["공연 뒤 전시 전환 9분","11/26 17:51–18:00 객석 철수와 같이"]]},
+ {n:"3-4",name:"알베르트 바르케 두란",work:"SYNAPTICON · 뇌파(BCI) 라이브",
+  facts:[["공연","11/28 19:30–20:00","30분 슬롯 (라이더 20–25분)"],["리허설","11/27 22:00–23:00","큐시트는 21:10 — 확정 필요"],["셋업","30분","리허설 1시간 안에"],["작가 지참","MacBook · Scarlett 4i4 · 뇌파 장비 · 카메라 · 스탠드","1인 방한"]],
+  req:[["음향","TRS 라인 2 → 하우스 믹서 직결 · 스테레오 PA","FOH 103dB(A) 무왜곡 30Hz–20kHz, 서브 충분히","chk"],
+       ["영상","4K HDMI 롱케이블 1 → LED 6.5m","길이 · 익스텐더 미정","chk"],
+       ["조명","조명쇼 불필요","","ok"],
+       ["특효","헤이저 — 공간 전체 짙고 균일하게 계속","자동 기능, 고출력","chk"],
+       ["무대","스탠드 지참 · 의자 필요 여부","라이더 '의자 0' vs 사진은 앉아서 공연","chk"],
+       ["인력","현장 기술 코디네이터 1명","FOH + 기술 코디 메모만, 지정자 없음","chk"],
+       ["전원","멀티탭 EU형","","wip"]],
+  dec:[["헤이저 사용 승인",""],["103dB(A) 가능한지","M4×4 + CODA×2 · 전시장 음량 제한"],["4K HDMI 길이 · 익스텐더",""],["기술 코디 지정",""],["11/27 리허설 시각","22–23 vs 큐시트 21:10"]]},
+ {n:"3-5",name:"라이언클래드 & 유시",work:"라이브 셋 + 라이브 비주얼",
+  facts:[["공연","11/28 20:10–20:40","알베르트 후 전환 9분 (20:01–20:10)"],["리허설","11/27 21:00–22:00","큐시트는 21:10 — 확정 필요"],["셋업","1시간",""],["작가 지참","MPC XL · 유시: APC40 · 랩탑 · DDJ-400","스피커 · 믹서 · 테이블 미지참"]],
+  req:[["음향","MPC XL TS 스테레오 → 스테이지 믹서/DI (테이블 바로 옆) → FOH","FOH까지 케이블 현장 준비 · 메인 좌우 2","wip"],
+       ["음향","모니터 1대 (테이블 좌측)","M6 4대 중 배정","chk"],
+       ["음향","유시 오디오 출력 받을지","DDJ-400 — 라이더에 오디오 라인 없음","chk"],
+       ["영상","유시 랩탑 → LED HDMI 1","라이브 비주얼","wip"],
+       ["무대","테이블 60×60 · 높이 90 (±5)","보유품 600×600×1000 (5cm 높음) · 유시 테이블 필요 여부","chk"],
+       ["전원","1구 220V","","wip"]],
+  dec:[["모니터 배정",""],["유시 오디오 · 테이블",""],["11/28 전환 9분 충분한지","알베르트 → 라이언클래드"],["11/27 리허설 시각","21–22 vs 큐시트 21:10"]]},
+ {n:"3-6",name:"에이와다 · 오픈 릴 앙상블",work:"MAGNETIZE · VJ 동행",
+  facts:[["공연","12/5 19:30–20:45 · 75분","19:00 객석 세팅 · 19:10 입장"],["리허설","12/4 19:00–21:00","18:30–19:00 조명 협의"],["셋업","12/4 16:00–19:00 (전시 중)","라이더: 반입 30분 + 셋업 2.5–3h · 셋업 전 현지 장비 모두 준비"],["작가 지참","릴 레코더 6 · 투어 믹서 · 카메라 · 무선 송신기 · 변압기 · VJ 장비",""]],
+  req:[["음향","투어 믹서 L/R XLR 2 + 마이크 3ch · 웨지 M6 ×4 · VJ용 XLR","킥 보강, FOH 엔지니어 동행 · 예비 XLR·TS 케이블","wip"],
+       ["음향","백라인: SM58 5 · 롱붐 스탠드 10 · 18\" 크래시 1 · 붐 심벌 스탠드 3 · 웨이트 3","협의표엔 웨지 4 · SM58 5만 · 스탠드·심벌은 어디에도 없음","chk"],
+       ["조명","조명 오퍼레이터 · 역광 · 샤프 · 쿨톤","손 동작이 관객·카메라에 보이게 · 바쁜 플래싱 피함","wip"],
+       ["특효","스트로브 · 헤이즈 · 레이저 환영 (선택)","재단도 포그 요청","chk"],
+       ["영상","카메라 → 무대 중앙 HDMI 1080p (10m, 플랜B 15m) · 무선 송신 테스트","무대→FOH SDI 용도 확인 · 라이더는 프로젝션 → LED로 진행 · 영상 오퍼 미지정","chk"],
+       ["무대","삼각단 재사용 (12/4 09–11 재설치) · 받침대 3 (W520 D430 H1050)","라이저 3은 최신 라이더에 없음 · 카트 4","chk"],
+       ["전원","무대 3곳 총 2kW (USL·USR·USC) + 백스테이지","220V / 60Hz / C·F형 사전 안내 (변압기 1.5kW 지참)","wip"]],
+  dec:[["백라인 렌탈","음향팀"],["받침대 3 제작 주체","세트업체?"],["영상 오퍼 · SDI 용도",""],["반입을 16시 전에 할 수 있는지","셋업 3h 안에 조명 체크까지"]]}
+];
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cv=document.getElementById("canvas");
+let html="";
+ARTISTS.forEach(a=>{
+ html+=`<section class="slide" data-t="${a.n}. ${esc(a.name)}"><h2>${a.n}. ${esc(a.name)} <small>${esc(a.work)}</small></h2>
+ <div class="grid"><div class="facts">${a.facts.map(f=>`<div class="fact"><em>${f[0]}</em><b>${esc(f[1])}</b>${f[2]?`<span>${esc(f[2]).replace(/\n/g,"<br>")}</span>`:""}</div>`).join("")}</div>
+ <div class="req"><div class="h">팀별 요구사항</div>${a.req.map(r=>`<div class="rq"><span class="tm" style="--c:var(${TC[r[0]]})">${r[0]}</span><p>${esc(r[1])}${r[2]?`<small>${esc(r[2])}</small>`:""}</p><span class="st ${r[3]}">${ST[r[3]]}</span></div>`).join("")}</div>
+ <div class="dec"><div class="h">회의에서 정할 것</div><ol>${a.dec.map(d=>`<li>${esc(d[0])}${d[1]?`<small>${esc(d[1])}</small>`:""}</li>`).join("")}</ol></div></div></section>`;});
+/* 공통 */
+const COMMON=[
+ ["특효","--fx",[["연무 승인 — 미리암 · 알베르트 · ORE","284 안전팀 · 공연일 감지기 OFF",1],["샤막 이탈 · 재설치 · 철거","11/26 · 11/27 이탈 → 11/26 19–20 재설치 → 11/28 09–11 철거"]]],
+ ["조명 · 전기","--lgt",[["조명 48.3kW vs 전기 계획 20kW","조명도면 합계 vs 3상 40A — 분전 방법",1],["조명도면 작가 확인","11/5 도면 (레이저 위치 포함)"],["공연 ↔ 하우스 전환 큐","전환 · 입장 · 오프멘트"]]],
+ ["무대 · 구조물","--set",[["삼각 무대단 깊이 3,640 vs 4,550","",1],["11/27–28 바닥 vs 284 대여단",""],["무대단 철수 11/26 19–20 · 재설치 12/4 09–11 · 철수 12/6 09–11",""]]],
+ ["음향","--snd",[["모니터 M6 4대 날짜별 배정","미리암 2 · 라이언클래드 1 · ORE 4"],["이브닝 오프멘트 무선MIC 1 · BGM","11/27 · 11/28 · 12/5"],["11/26 14:00 프레스 투어부터 전시 사운드",""]]],
+ ["영상","--vid",[["전시 ↔ 공연 전환 시각","11/26 17:51 · 11/27 22:10 · 11/28 20:41 · 12/4 21:00 · 12/5 20:46"],["쿠로카와 전시작 LED 3면 · 2.1ch 상시","사이드 960×1536 스케일링"],["공연 타이틀 · 행사 타이틀 화면",""]]],
+ ["운영","--str",[["이브닝 객석 수 확정","11/27 · 11/28 · 12/5 — 19:00 세팅, 19:10 입장",1],["영어 통역 (이브닝 포함)","셋업~공연 무대 소통"],["11/27 리허설 시각 확정","큐시트 21:10 겹침"]]]
+];
+html+=`<section class="slide" data-t="3-7. 공통 · 팀별로 정할 것"><h2>3-7. 공통 <small>여러 작가에 걸린 것 · 팀별</small></h2><div class="cgrid">${COMMON.map(c=>`<div class="cc"><span class="tm" style="--c:var(${c[1]})">${c[0]}</span><ul>${c[2].map(i=>`<li${i[2]?' class="k"':""}>${esc(i[0])}${i[1]?`<small>${esc(i[1])}</small>`:""}</li>`).join("")}</ul></div>`).join("")}</div>
+ <div class="foot">주황 = 먼저 정할 것 &nbsp;·&nbsp; 전체 체크리스트: yyavec.github.io/unfoldx-techrider/check.html</div></section>`;
+cv.insertAdjacentHTML("beforeend",html);
+/* 타임라인 */
+(function(){const H0=16,H1=23,P=t=>{const[h,m]=t.split(":").map(Number);return (h+m/60-H0)/(H1-H0)*100};
+ const R=[["11/25","수",[["18:00","19:00","reh","쿠로카와"],["19:00","20:00","reh","미리암"]],"10–17 개막식 리허설"],
+  ["11/26","목 · 개막",[["16:00","16:41","cer","개막식"],["16:41","17:00","chg","전환"],["17:00","17:20","show","미리암"],["17:20","17:30","chg",""],["17:30","17:50","show","쿠로카와"],["19:00","20:00","set","샤막 재설치 · 단 철수"]],""],
+  ["11/27","금",[["19:00","19:10","chg",""],["19:30","20:10","show","미리암"],["20:11","20:20","chg",""],["20:20","21:00","show","쿠로카와"],["21:00","22:00","reh","라이언클래드"],["22:00","23:00","reh","알베르트"]],""],
+  ["11/28","토",[["19:00","19:10","chg",""],["19:30","20:00","show","알베르트"],["20:01","20:10","chg",""],["20:10","20:40","show","라이언클래드"]],""],
+  ["12/4","금",[["16:00","19:00","set","ORE 셋업 (전시 중)"],["19:00","21:00","reh","ORE 리허설"]],""],
+  ["12/5","토",[["19:00","19:10","chg",""],["19:30","20:45","show","ORE 75분"]],""]];
+ let s=`<div class="ax">`;for(let h=H0;h<=H1;h++)s+=`<span style="left:${(h-H0)/(H1-H0)*100}%">${h}:00</span>`;s+=`</div>`;
+ R.forEach(r=>{s+=`<div class="row"><div class="d">${r[0]}<small>${r[1]}</small></div><div class="tr">`;for(let h=H0;h<=H1;h++)s+=`<i class="g" style="left:${(h-H0)/(H1-H0)*100}%"></i>`;
+  r[2].forEach(b=>{s+=`<div class="b ${b[2]}" style="left:${P(b[0])}%;width:calc(${P(b[1])-P(b[0])}% - 3px)">${esc(b[3])}</div>`});if(r[3])s+=`<span class="note">${r[3]}</span>`;s+=`</div></div>`;});
+ document.getElementById("tl").innerHTML=s;})();
+/* 내비게이션 */
+const slides=[...document.querySelectorAll(".slide")];let cur=0;
+const menu=document.getElementById("menu");menu.innerHTML=slides.map((s,i)=>`<button data-i="${i}">${i+1}. ${esc(s.dataset.t)}</button>`).join("");
+function go(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,k)=>s.classList.toggle("on",k===cur));
+ document.getElementById("ct").textContent=`${cur+1} / ${slides.length}`;document.getElementById("tt").textContent=slides[cur].dataset.t;
+ menu.querySelectorAll("button").forEach((b,k)=>b.classList.toggle("cur",k===cur));history.replaceState(null,"","#s"+(cur+1));}
+function fit(){const sc=Math.min(innerWidth/1600,(innerHeight)/900)*0.98;cv.style.transform=`scale(${sc})`;}
+addEventListener("resize",fit);fit();
+addEventListener("keydown",e=>{if(["ArrowRight","PageDown"," ","Enter"].includes(e.key)){e.preventDefault();go(cur+1)}else if(["ArrowLeft","PageUp","Backspace"].includes(e.key)){e.preventDefault();go(cur-1)}else if(e.key==="Home")go(0);else if(e.key==="End")go(slides.length-1);else if(e.key==="f"||e.key==="F")fsToggle();else if(e.key==="Escape")menu.classList.remove("on");});
+document.getElementById("nx").onclick=()=>go(cur+1);document.getElementById("pv").onclick=()=>go(cur-1);
+document.getElementById("mb").onclick=()=>menu.classList.toggle("on");
+menu.onclick=e=>{const b=e.target.closest("button");if(b){go(+b.dataset.i);menu.classList.remove("on")}};
+function fsToggle(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.getElementById("fs").onclick=fsToggle;
+let tx=null;addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});addEventListener("touchend",e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>60&&!e.target.closest(".imgwrap"))go(cur+(d<0?1:-1));tx=null},{passive:true});
+let it;const wake=()=>{document.body.classList.remove("idle");clearTimeout(it);it=setTimeout(()=>document.body.classList.add("idle"),2500)};addEventListener("mousemove",wake);wake();
+const m=/#s(\d+)/.exec(location.hash);go(m?+m[1]-1:0);
+</script>
+</body></html>
