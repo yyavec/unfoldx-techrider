@@ -9,18 +9,18 @@
 :root{
   --bg:#eef1f3;--panel:#fff;--ink:#15212b;--muted:#5f6d78;--line:#d6dde2;--soft:#e8ecef;
   --accent:#d98a00;--accent-soft:#fdf0d6;--ok:#1f8a5b;--ok-soft:#ddf3e8;--wip:#2f6fb5;--wip-soft:#e0ecf9;--todo:#b9480f;--todo-soft:#fbe9df;
-  --t-snd:#2f6fb5;--t-lgt:#d98a00;--t-fx:#8a4fd1;--t-vid:#0f8f8f;--t-str:#6b5b45;--t-pwr:#b9480f;
+  --t-snd:#2f6fb5;--t-lgt:#d98a00;--t-fx:#8a4fd1;--t-lsr:#d63a8a;--t-vid:#0f8f8f;--t-str:#6b5b45;--t-pwr:#b9480f;
   --sans:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f161c;--panel:#17212a;--ink:#e6edf2;--muted:#9aa8b3;--line:#2a3743;--soft:#1f2b35;
   --accent:#f0a826;--accent-soft:#3a2c10;--ok:#4cc38a;--ok-soft:#163327;--wip:#6aa6e8;--wip-soft:#172a40;--todo:#f08a5d;--todo-soft:#3a2117;
-  --t-snd:#6aa6e8;--t-lgt:#f0a826;--t-fx:#b48cf0;--t-vid:#3fc7c7;--t-str:#c2a882;--t-pwr:#f08a5d;color-scheme:dark}}
+  --t-snd:#6aa6e8;--t-lgt:#f0a826;--t-fx:#b48cf0;--t-lsr:#f07ab8;--t-vid:#3fc7c7;--t-str:#c2a882;--t-pwr:#f08a5d;color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f161c;--panel:#17212a;--ink:#e6edf2;--muted:#9aa8b3;--line:#2a3743;--soft:#1f2b35;
   --accent:#f0a826;--accent-soft:#3a2c10;--ok:#4cc38a;--ok-soft:#163327;--wip:#6aa6e8;--wip-soft:#172a40;--todo:#f08a5d;--todo-soft:#3a2117;
-  --t-snd:#6aa6e8;--t-lgt:#f0a826;--t-fx:#b48cf0;--t-vid:#3fc7c7;--t-str:#c2a882;--t-pwr:#f08a5d;color-scheme:dark}
+  --t-snd:#6aa6e8;--t-lgt:#f0a826;--t-fx:#b48cf0;--t-lsr:#f07ab8;--t-vid:#3fc7c7;--t-str:#c2a882;--t-pwr:#f08a5d;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
@@ -78,7 +78,7 @@ details.etc summary small{font-weight:400;color:var(--muted);margin-left:6px}
   <header>
     <div class="label">UNFOLD X 2026 · 메인홀 · 시스템팀</div>
     <h1>시스템팀 체크리스트</h1>
-    <p>음향 · 조명 · 특효 · 영상 · 구조물 팀에 확인할 것. 개막 세레모니 관련은 빠져 있어요. 체크하면 이 기기에 저장돼요.</p>
+    <p>음향 · 조명 · 특효 · 레이저 · 영상 · 구조물 팀에 확인할 것. 개막 세레모니 관련은 빠져 있어요. 체크하면 이 기기에 저장돼요.</p>
     <a class="back" href="./">← 테크라이더 메인으로</a>
   </header>
   <nav class="ov" id="ov"></nav>
@@ -96,7 +96,8 @@ details.etc summary small{font-weight:400;color:var(--muted);margin-left:6px}
 const TEAMS=[
  ["snd","음향","큐도스","--t-snd",[["셋업","11/24 10:00–15:00 반입·설치"],["콘솔","SQ7 · M4×4 · M6×4 · CODA×2"]]],
  ["lgt","조명","","--t-lgt",[["셋업","11/24 15:00–18:00 · 포커싱 18–21 (암전)"],["ORE","12/4 16–19 셋업 중 조명 체크"]]],
- ["fx","특효 · 레이저","mms (포그·샤막 이탈) · 에이포인트 (레이저)","--t-fx",[["특효","11/23 12:30–16:00 이탈장치·샤막·포그"],["레이저","11/24 16–18 셋업 · 18–20 메모리"]]],
+ ["fx","특효","mms (포그·샤막 이탈)","--t-fx",[["셋업","11/23 12:30–16:00 이탈장치·샤막·포그"],["테스트","11/24 15–16 포그"]]],
+ ["lsr","레이저","에이포인트","--t-lsr",[["셋업","11/24 16–18 셋업 · 18–20 메모리"],["장비","조명도면 10W 레이저 3대"]]],
  ["vid","영상 · LED","베이직테크","--t-vid",[["셋업","11/23 13:00–17:00 LED"],["LED","메인 6500×4000 ×2 · 사이드 2500×4000"]]],
  ["str","구조물 · 무대","스테이지앵커 (구조물) · 세트데인 (바닥·세트)","--t-str",[["셋업","11/23 09–13 구조물 · 09:30–11 바닥"],["무대단","11/26 밤 철수 → 12/4 재설치 → 12/6 철수"]]],
  ["pwr","전기 · 전원","팀 공통","--t-pwr",[["계획","메인홀 60–65kW · LED 30 · 음향 10–13 · 조명 20 · FOH 5"]]]
@@ -128,9 +129,9 @@ const ITEMS=[
  ["fx","1","샤막 이탈 시간","11/26 16:41–17:00 전환 중 이탈 → 17:20–17:30 철수. 11/27 19:00–19:10 이탈 → 20:11–20:20 철수.","큐시트 빨간 표시.","미리암 · 11/26 · 11/27"],
  ["fx","1","샤막 최종 높이 · 발주","폭 10m, 높이 4,400 vs 5,100 확정됐는지, 수령 일정 (11/23 오전).","","미리암"],
  ["fx","","샤막 재설치 11/26 19–20 · 철거 11/28 09–11","VIP 투어 후 재설치, 11/28 트러스·트러스 LED·샤막·이탈기 철거.","리프트 1대, 하수 백스 보관.","11/26 · 11/28"],
- ["fx","","레이저 사양 (미리암)","RGB 10–12W, 갈보, ILDA, 40kpps@8° 이상, 풀 아날로그 (TTL 불가), 스캔각 60° — 맞는 장비인지.","","미리암 · 에이포인트"],
- ["fx","","10W 레이저 3대 중 미리암용 몇 대","조명도면 3대 — 미리암 (퍼포머 뒤 5.6m)에 몇 대인지.","","미리암 · 에이포인트"],
- ["fx","","레이저 높이·카메라 위치","레이저 2–3m, 약 2.7m 이상에 카메라·프로젝터 금지. 재단 촬영 카메라 위치와 겹치지 않는지.","","미리암 · 11/26"],
+ ["lsr","","레이저 사양 (미리암)","RGB 10–12W, 갈보, ILDA, 40kpps@8° 이상, 풀 아날로그 (TTL 불가), 스캔각 60° — 맞는 장비인지.","","미리암"],
+ ["lsr","","10W 레이저 3대 중 미리암용 몇 대","조명도면 3대 — 미리암 (퍼포머 뒤 5.6m)에 몇 대인지.","","미리암"],
+ ["lsr","","레이저 높이·카메라 위치","레이저 2–3m, 약 2.7m 이상에 카메라·프로젝터 금지. 재단 촬영 카메라 위치와 겹치지 않는지.","","미리암 · 11/26"],
  ["fx","","포그머신 리허설","11/25 미리암 리허설 19–20 포그머신 준비.","","미리암 · 11/25"],
  // 영상
  ["vid","1","쿠로카와 WUXGA 2라인 전송","1920×1200 네이티브 2라인, 3G-SDI 불가 → EDID 패스스루 익스텐더·광·HDBaseT 중 무엇으로.","","쿠로카와"],
