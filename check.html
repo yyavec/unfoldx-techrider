@@ -78,6 +78,18 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .it.decided .pill{background:var(--soft);color:var(--muted)}
 .it.decided .cb.dec{color:var(--ink)}
 .hide-done .it.done,.hide-done .it.decided{display:none}
+.ag{border-top:1px solid var(--line)}
+.ah{display:flex;align-items:center;gap:8px;padding:9px 18px;background:var(--panel);font-weight:700;font-size:.92rem;border-bottom:1px dashed var(--line)}
+.ah i{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.ah small{font-weight:400;color:var(--muted);font-size:.75rem}
+.ag .it{border-top:0;border-bottom:1px solid var(--line)}
+.ag .it:last-child{border-bottom:0}
+.ag .it>div:last-child{border-left:3px solid var(--a);padding-left:10px}
+.tchip{font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:5px;color:#fff;background:var(--c)}
+.view{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.view button{font:inherit;font-size:.85rem;padding:7px 14px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.view button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.hide-done .ag:not(:has(.it:not(.done):not(.decided))){display:none}
 .lg{display:flex;gap:12px;font-size:.78rem;color:var(--muted);align-items:center}
 .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-2px}
 details.etc{background:var(--panel);border:1px solid var(--line);border-radius:10px}
@@ -96,6 +108,7 @@ details.etc summary small{font-weight:400;color:var(--muted);margin-left:6px}
   </header>
   <nav class="ov" id="ov"></nav>
   <div class="tools">
+    <span class="view" role="group" aria-label="묶는 방식"><button data-view="artist" aria-pressed="true">작가별</button><button data-view="team" aria-pressed="false">팀별</button></span>
     <button class="tg-btn" id="hide" aria-pressed="false">끝난 것 숨기기</button>
     <button class="tg-btn" id="first" aria-pressed="false">우선만 보기</button>
     <span class="lg"><span><i style="background:var(--ok-soft);border:1px solid var(--ok)"></i>확인</span><span><i style="background:var(--soft);border:1px solid var(--muted)"></i>결정 (흐리게)</span></span><span class="total" id="total"></span>
@@ -188,12 +201,33 @@ const K="ux-check-v1",K2="ux-decide-v1";let st={},dc={};try{st=JSON.parse(localS
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(st));localStorage.setItem(K2,JSON.stringify(dc))}catch(e){}};
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=it=>it[0]+"|"+it[2];
-document.getElementById("teams").innerHTML=TEAMS.map(([k,n,v,c,w])=>{
- const its=ITEMS.filter(i=>i[0]===k).sort((a,b)=>(b[1]==="1")-(a[1]==="1"));
- return `<section class="team" id="t-${k}" style="--c:var(${c})"><div class="th"><h2>${n}</h2><span class="vendor">${esc(v)}</span><span class="n" data-n="${k}"></span></div>
- <div class="when">${w.map(x=>`<span><b>${x[0]}</b> ${esc(x[1])}</span>`).join("")}</div>
- ${its.map(i=>`<div class="it${i[1]==="1"?" first":""}" data-id="${esc(id(i))}"><div class="cbs"><label class="cb ok"><input type="checkbox" data-k="c"><span>확인</span></label><label class="cb dec"><input type="checkbox" data-k="d"><span>결정</span></label></div><div><div class="t">${esc(i[2])}${i[1]==="1"?'<span class="pill p-1">우선</span>':""}</div><div class="q">${esc(i[3])}</div>${i[4]?`<div class="c">${esc(i[4])}</div>`:""}<div class="chips">${i[5].split(" · ").map(t=>`<span class="chip">${esc(t)}</span>`).join("")}</div></div></div>`).join("")}</section>`}).join("");
-document.getElementById("etc").innerHTML=ETC.map(e=>{const i=["etc","",e[0],e[1]];return `<div class="it" data-id="${esc("etc|"+e[0])}"><div class="cbs"><label class="cb ok"><input type="checkbox" data-k="c"><span>확인</span></label><label class="cb dec"><input type="checkbox" data-k="d"><span>결정</span></label></div><div><div class="t">${esc(e[0])}</div>${e[1]?`<div class="c">${esc(e[1])}</div>`:""}</div></div>`}).join("");
+const ARTS=[["미리암","미리암 블로","#d98a00"],["쿠로카와 전시작","쿠로카와 전시작 (e-x/nd-o)","#5f6d78"],["쿠로카와","료이치 쿠로카와","#2f6fb5"],["알베르트","알베르트 바르케 두란","#8a4fd1"],["라이언클래드","라이언클래드 & 유시","#0f8f8f"],["ORE","에이와다 · ORE","#b9480f"],["공통","공통 · 여러 작가","#6b7680"]];
+const OVR={"샤막 재설치 11/26 19–20 · 철거 11/28 09–11":"미리암","공연 때 전시 작은 LED 소등":"미리암","유시 랩탑 HDMI 1":"라이언클래드","쿠로카와 테이블 2000×1000×900":"쿠로카와","미리암 셋업 2h vs 리허설 1h":"미리암","알베르트 현장 기술 코디 1명":"알베르트","ORE 영상 오퍼 지정":"ORE","알베르트 의자 필요 여부":"알베르트","ORE 카트 4 · 식수 · 셋업 16시 전 반입":"ORE"};
+function artistOf(title,text){if(OVR[title])return OVR[title];const t=text.replace(/쿠로카와 전시작|전시작/g,"§");const hit=[];
+ if(/§/.test(t))hit.push("쿠로카와 전시작");for(const n of ["미리암","쿠로카와","알베르트","라이언클래드","ORE"])if(t.includes(n))hit.push(n);
+ if(/유시/.test(t)&&!hit.includes("라이언클래드"))hit.push("라이언클래드");
+ return hit.length===1?hit[0]:"공통";}
+const aOf=i=>artistOf(i[2],i[5]+" "+i[2]);
+const cb='<div class="cbs"><label class="cb ok"><input type="checkbox" data-k="c"><span>확인</span></label><label class="cb dec"><input type="checkbox" data-k="d"><span>결정</span></label></div>';
+const TM=Object.fromEntries(TEAMS.map(t=>[t[0],t]));
+const itemHTML=(i,showTeam)=>`<div class="it${i[1]==="1"?" first":""}" data-id="${esc(id(i))}">${cb}<div><div class="t">${showTeam?`<span class="tchip" style="--c:var(${TM[i[0]][3]})">${TM[i[0]][1]}</span>`:""}${esc(i[2])}${i[1]==="1"?'<span class="pill p-1">우선</span>':""}</div><div class="q">${esc(i[3])}</div>${i[4]?`<div class="c">${esc(i[4])}</div>`:""}<div class="chips">${i[5].split(" · ").map(t=>`<span class="chip">${esc(t)}</span>`).join("")}</div></div></div>`;
+const grp=(list,showTeam)=>ARTS.map(([k,full,col])=>{const g=list.filter(i=>aOf(i)===k);return g.length?`<div class="ag" style="--a:${col}"><div class="ah"><i></i>${esc(full)}<small>${g.length}</small></div>${g.map(i=>itemHTML(i,showTeam)).join("")}</div>`:""}).join("");
+let VIEW="artist",FIRST=false;
+function render(){
+ const pr=(a,b)=>(b[1]==="1")-(a[1]==="1");
+ if(VIEW==="team"){
+  document.getElementById("teams").innerHTML=TEAMS.map(([k,n,v,c,w])=>{const its=ITEMS.filter(i=>i[0]===k).sort(pr);
+   return `<section class="team" id="t-${k}" style="--c:var(${c})"><div class="th"><h2>${n}</h2>${v?`<span class="vendor">${esc(v)}</span>`:""}<span class="n" data-n="${k}"></span></div>
+   <div class="when">${w.map(x=>`<span><b>${x[0]}</b> ${esc(x[1])}</span>`).join("")}</div>${grp(its,false)}</section>`}).join("");
+ }else{
+  const order=Object.keys(TM);
+  document.getElementById("teams").innerHTML=ARTS.map(([k,full,col])=>{const its=ITEMS.filter(i=>aOf(i)===k).sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0])||pr(a,b));if(!its.length)return"";
+   return `<section class="team" style="--c:${col}"><div class="th"><h2>${esc(full)}</h2><span class="vendor">${[...new Set(its.map(i=>TM[i[0]][1]))].join(" · ")}</span><span class="n">${its.length}개</span></div>${its.map(i=>itemHTML(i,true)).join("")}</section>`}).join("");
+ }
+ const etc=ETC.map(e=>["etc","",e[0],e[1],"",e[0]+" "+e[1]]);
+ document.getElementById("etc").innerHTML=ARTS.map(([k,full,col])=>{const g=etc.filter(i=>artistOf(i[2],i[5])===k);return g.length?`<div class="ag" style="--a:${col}"><div class="ah"><i></i>${esc(full)}<small>${g.length}</small></div>${g.map(e=>`<div class="it" data-id="${esc("etc|"+e[2])}">${cb}<div><div class="t">${esc(e[2])}</div>${e[3]?`<div class="c">${esc(e[3])}</div>`:""}</div></div>`).join("")}</div>`:""}).join("");
+ document.querySelectorAll(".team .it").forEach(l=>l.hidden=FIRST&&!l.classList.contains("first"));
+ if(typeof upd==="function")upd();}
 function upd(){let all=0,nc=0,nd=0;
  document.querySelectorAll(".it").forEach(l=>{const c=!!st[l.dataset.id],d=!!dc[l.dataset.id];l.querySelector('[data-k="c"]').checked=c;l.querySelector('[data-k="d"]').checked=d;l.classList.toggle("done",c&&!d);l.classList.toggle("decided",d);});
  document.getElementById("ov").innerHTML=TEAMS.map(([k,n,v,c])=>{const its=ITEMS.filter(i=>i[0]===k),D=its.filter(i=>dc[id(i)]).length,C=its.filter(i=>st[id(i)]&&!dc[id(i)]).length,N=its.length;all+=N;nc+=C;nd+=D;
@@ -203,7 +237,9 @@ function upd(){let all=0,nc=0,nd=0;
 document.addEventListener("change",e=>{const l=e.target.closest(".it");if(!l||!e.target.dataset.k)return;const o=e.target.dataset.k==="d"?dc:st;if(e.target.checked)o[l.dataset.id]=1;else delete o[l.dataset.id];save();upd();});
 const tg=(b,cls)=>b.addEventListener("click",()=>{const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);document.body.classList.toggle(cls,on);});
 tg(document.getElementById("hide"),"hide-done");
-const f=document.getElementById("first");f.addEventListener("click",()=>{const on=f.getAttribute("aria-pressed")!=="true";f.setAttribute("aria-pressed",on);document.querySelectorAll(".team .it").forEach(l=>l.hidden=on&&!l.classList.contains("first"));});
-upd();
+const f=document.getElementById("first");f.addEventListener("click",()=>{FIRST=f.getAttribute("aria-pressed")!=="true";f.setAttribute("aria-pressed",FIRST);render();});
+document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>{VIEW=b.dataset.view;document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x===b));render();}));
+document.getElementById("ov").addEventListener("click",e=>{const a=e.target.closest("a");if(a&&VIEW!=="team"){VIEW="team";document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.view==="team"));render();}});
+render();
 </script>
 </body></html>
