@@ -38,7 +38,9 @@ header p{margin:0;color:var(--muted);font-size:.9rem}
 .ov b{font-size:.95rem}
 .ov small{font-size:.72rem;color:var(--muted)}
 .bar{height:6px;border-radius:3px;background:var(--soft);overflow:hidden}
+.bar{display:flex}
 .bar i{display:block;height:100%;background:var(--c);width:0;transition:width .3s}
+.bar i.g{background:var(--muted);opacity:.55}
 .ov .n{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
 .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
@@ -53,8 +55,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .th .n{margin-left:auto;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
 .when{padding:8px 18px;background:var(--soft);font-size:.8rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
 .when b{color:var(--ink);font-weight:600}
-.it{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:12px 18px;border-top:1px solid var(--line);cursor:pointer}
-.it input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--ok);cursor:pointer}
+.it{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:12px 18px;border-top:1px solid var(--line);transition:opacity .2s,background .2s}
+.cbs{display:flex;flex-direction:column;gap:6px}
+.cb{display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;font-size:.64rem;font-weight:600;color:var(--muted);user-select:none}
+.cb input{width:20px;height:20px;margin:0;cursor:pointer}
+.cb.ok input{accent-color:var(--ok)}
+.cb.dec input{accent-color:#8a939b}
+.cb.ok:has(input:checked){color:var(--ok)}
 .it .t{font-weight:600;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .it .q{font-size:.88rem;margin-top:3px}
 .it .q::before{content:"물어볼 것 · ";color:var(--muted);font-size:.78rem}
@@ -66,7 +73,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .p-w{color:var(--wip);background:var(--wip-soft)}
 .it.done .t,.it.done .q{text-decoration:line-through;color:var(--muted)}
 .it.done{background:var(--ok-soft)}
-.hide-done .it.done{display:none}
+.it.decided{background:var(--soft);opacity:.45}
+.it.decided .t,.it.decided .q{text-decoration:line-through;color:var(--muted)}
+.it.decided .pill{background:var(--soft);color:var(--muted)}
+.it.decided .cb.dec{color:var(--ink)}
+.hide-done .it.done,.hide-done .it.decided{display:none}
+.lg{display:flex;gap:12px;font-size:.78rem;color:var(--muted);align-items:center}
+.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-2px}
 details.etc{background:var(--panel);border:1px solid var(--line);border-radius:10px}
 details.etc summary{padding:14px 18px;cursor:pointer;font-weight:700;list-style:none}
 details.etc summary::-webkit-details-marker{display:none}
@@ -78,14 +91,14 @@ details.etc summary small{font-weight:400;color:var(--muted);margin-left:6px}
   <header>
     <div class="label">UNFOLD X 2026 · 메인홀 · 시스템팀</div>
     <h1>시스템팀 체크리스트</h1>
-    <p>음향 · 조명 · 특효 · 레이저 · 영상 · 구조물 팀에 확인할 것. 개막 세레모니 관련은 빠져 있어요. 체크하면 이 기기에 저장돼요.</p>
+    <p>음향 · 조명 · 특효 · 레이저 · 영상 · 구조물 팀에 확인할 것. 개막 세레모니 관련은 빠져 있어요. 확인은 초록, 결정은 회색으로 흐려져요. 이 기기에 저장돼요.</p>
     <a class="back" href="./">← 테크라이더 메인으로</a>
   </header>
   <nav class="ov" id="ov"></nav>
   <div class="tools">
     <button class="tg-btn" id="hide" aria-pressed="false">끝난 것 숨기기</button>
     <button class="tg-btn" id="first" aria-pressed="false">우선만 보기</button>
-    <span class="total" id="total"></span>
+    <span class="lg"><span><i style="background:var(--ok-soft);border:1px solid var(--ok)"></i>확인</span><span><i style="background:var(--soft);border:1px solid var(--muted)"></i>결정 (흐리게)</span></span><span class="total" id="total"></span>
   </div>
   <div id="teams" style="display:flex;flex-direction:column;gap:14px"></div>
   <details class="etc"><summary>시스템팀 말고 다른 쪽 확인할 것<small>운영 · 작가 · 재단 — 참고</small></summary><div id="etc"></div></details>
@@ -171,23 +184,23 @@ const ETC=[
  ["미리암 셋업 2h vs 리허설 1h","11/25"],
  ["작가 회신: 알베르트 라이더 · 라이언클래드 보완 · 유시 추가",""]
 ];
-const K="ux-check-v1";let st={};try{st=JSON.parse(localStorage.getItem(K)||"{}")}catch(e){}
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}};
+const K="ux-check-v1",K2="ux-decide-v1";let st={},dc={};try{st=JSON.parse(localStorage.getItem(K)||"{}");dc=JSON.parse(localStorage.getItem(K2)||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(st));localStorage.setItem(K2,JSON.stringify(dc))}catch(e){}};
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=it=>it[0]+"|"+it[2];
 document.getElementById("teams").innerHTML=TEAMS.map(([k,n,v,c,w])=>{
  const its=ITEMS.filter(i=>i[0]===k).sort((a,b)=>(b[1]==="1")-(a[1]==="1"));
  return `<section class="team" id="t-${k}" style="--c:var(${c})"><div class="th"><h2>${n}</h2><span class="vendor">${esc(v)}</span><span class="n" data-n="${k}"></span></div>
  <div class="when">${w.map(x=>`<span><b>${x[0]}</b> ${esc(x[1])}</span>`).join("")}</div>
- ${its.map(i=>`<label class="it${i[1]==="1"?" first":""}" data-id="${esc(id(i))}"><input type="checkbox"><div><div class="t">${esc(i[2])}${i[1]==="1"?'<span class="pill p-1">우선</span>':""}</div><div class="q">${esc(i[3])}</div>${i[4]?`<div class="c">${esc(i[4])}</div>`:""}<div class="chips">${i[5].split(" · ").map(t=>`<span class="chip">${esc(t)}</span>`).join("")}</div></div></label>`).join("")}</section>`}).join("");
-document.getElementById("etc").innerHTML=ETC.map(e=>{const i=["etc","",e[0],e[1]];return `<label class="it" data-id="${esc("etc|"+e[0])}"><input type="checkbox"><div><div class="t">${esc(e[0])}</div>${e[1]?`<div class="c">${esc(e[1])}</div>`:""}</div></label>`}).join("");
-function upd(){let all=0,dn=0;
- document.querySelectorAll(".it").forEach(l=>{const d=!!st[l.dataset.id];l.querySelector("input").checked=d;l.classList.toggle("done",d);});
- document.getElementById("ov").innerHTML=TEAMS.map(([k,n,v,c])=>{const its=ITEMS.filter(i=>i[0]===k),d=its.filter(i=>st[id(i)]).length;all+=its.length;dn+=d;
-  const s=document.querySelector(`[data-n="${k}"]`);if(s)s.textContent=`${d} / ${its.length}`;
-  return `<a href="#t-${k}" style="--c:var(${c})"><b>${n}</b><div class="bar"><i style="width:${its.length?d/its.length*100:0}%"></i></div><span class="n">${d} / ${its.length}</span></a>`}).join("");
- document.getElementById("total").textContent=`전체 ${dn} / ${all}`;}
-document.addEventListener("change",e=>{const l=e.target.closest(".it");if(!l)return;if(e.target.checked)st[l.dataset.id]=1;else delete st[l.dataset.id];save();upd();});
+ ${its.map(i=>`<div class="it${i[1]==="1"?" first":""}" data-id="${esc(id(i))}"><div class="cbs"><label class="cb ok"><input type="checkbox" data-k="c"><span>확인</span></label><label class="cb dec"><input type="checkbox" data-k="d"><span>결정</span></label></div><div><div class="t">${esc(i[2])}${i[1]==="1"?'<span class="pill p-1">우선</span>':""}</div><div class="q">${esc(i[3])}</div>${i[4]?`<div class="c">${esc(i[4])}</div>`:""}<div class="chips">${i[5].split(" · ").map(t=>`<span class="chip">${esc(t)}</span>`).join("")}</div></div></div>`).join("")}</section>`}).join("");
+document.getElementById("etc").innerHTML=ETC.map(e=>{const i=["etc","",e[0],e[1]];return `<div class="it" data-id="${esc("etc|"+e[0])}"><div class="cbs"><label class="cb ok"><input type="checkbox" data-k="c"><span>확인</span></label><label class="cb dec"><input type="checkbox" data-k="d"><span>결정</span></label></div><div><div class="t">${esc(e[0])}</div>${e[1]?`<div class="c">${esc(e[1])}</div>`:""}</div></div>`}).join("");
+function upd(){let all=0,nc=0,nd=0;
+ document.querySelectorAll(".it").forEach(l=>{const c=!!st[l.dataset.id],d=!!dc[l.dataset.id];l.querySelector('[data-k="c"]').checked=c;l.querySelector('[data-k="d"]').checked=d;l.classList.toggle("done",c&&!d);l.classList.toggle("decided",d);});
+ document.getElementById("ov").innerHTML=TEAMS.map(([k,n,v,c])=>{const its=ITEMS.filter(i=>i[0]===k),D=its.filter(i=>dc[id(i)]).length,C=its.filter(i=>st[id(i)]&&!dc[id(i)]).length,N=its.length;all+=N;nc+=C;nd+=D;
+  const s=document.querySelector(`[data-n="${k}"]`);if(s)s.textContent=`확인 ${C} · 결정 ${D} / ${N}`;
+  return `<a href="#t-${k}" style="--c:var(${c})"><b>${n}</b><div class="bar"><i style="width:${N?C/N*100:0}%"></i><i class="g" style="width:${N?D/N*100:0}%"></i></div><span class="n">확인 ${C} · 결정 ${D} / ${N}</span></a>`}).join("");
+ document.getElementById("total").textContent=`확인 ${nc} · 결정 ${nd} / ${all}`;}
+document.addEventListener("change",e=>{const l=e.target.closest(".it");if(!l||!e.target.dataset.k)return;const o=e.target.dataset.k==="d"?dc:st;if(e.target.checked)o[l.dataset.id]=1;else delete o[l.dataset.id];save();upd();});
 const tg=(b,cls)=>b.addEventListener("click",()=>{const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);document.body.classList.toggle(cls,on);});
 tg(document.getElementById("hide"),"hide-done");
 const f=document.getElementById("first");f.addEventListener("click",()=>{const on=f.getAttribute("aria-pressed")!=="true";f.setAttribute("aria-pressed",on);document.querySelectorAll(".team .it").forEach(l=>l.hidden=on&&!l.classList.contains("first"));});
