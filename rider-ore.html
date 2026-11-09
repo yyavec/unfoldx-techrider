@@ -25,12 +25,36 @@ li{margin:3px 0}
 table{border-collapse:collapse;width:100%;font-size:.86rem}
 th,td{border-bottom:1px solid var(--soft);padding:7px 9px;text-align:left;vertical-align:top}
 thead th{background:var(--soft)}
+
+/* 참고 자료 */
+.refbtn{display:flex;align-items:center;gap:12px;width:100%;font:inherit;font-size:1.05rem;font-weight:700;padding:16px 20px;border-radius:12px;border:0;background:var(--ink);color:var(--panel);cursor:pointer;text-align:left}
+.refbtn small{font-weight:400;opacity:.75;font-size:.8rem}
+.refbtn .pl{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-size:.9rem;flex:none}
+dialog.refdlg{width:min(1100px,calc(100vw - 24px));max-height:calc(100vh - 24px);padding:0;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink)}
+dialog.refdlg::backdrop{background:rgba(10,15,20,.6)}
+.rh{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:1}
+.rh b{font-size:1.05rem}.rh span{font-size:.78rem;color:var(--muted)}
+.rh button{margin-left:auto;font:inherit;font-size:1.1rem;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.rb{padding:14px 16px 20px;display:flex;flex-direction:column;gap:18px}
+.rb h3{margin:0 0 8px;font-size:.95rem}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.rg.big{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.rg a{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden;text-decoration:none;color:var(--ink);background:var(--bg)}
+.rg img{display:block;width:100%;aspect-ratio:16/10;object-fit:contain;background:#111}
+.rg.plans img{background:#fff}
+.rg a span{font-size:.8rem;padding:7px 10px}
+.vid img{object-fit:cover}
+.vid .ph{aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;background:#111;color:#fff;font-size:2rem}
+.rl{display:flex;flex-direction:column;gap:6px;margin:0;padding-left:18px}
+.rl a{color:inherit}
+.rnote{font-size:.75rem;color:var(--muted)}
 </style></head>
 <body><main>
 <a class="back" href="index.html">← 작가별 요구사항으로</a>
 <header><div class="meta"><span>UNFOLD X 2026 · 테크라이더 번역</span></div>
 <h1>에이와다 · 오픈 릴 앙상블 <span>MAGNETIZE</span></h1>
 <div class="meta"><span>원본: ORE // TECHRIDER // UNFOLD 2026.docx / 2026-10-30 수정본 (최신)</span><span>스테이지 플롯: [plot][2주차]MAGNETIZE - ORE_PLOT2026_noVJ_EN.pdf / 2026-10-15</span></div></header>
+<button class="refbtn" type="button" id="refopen"><span class="pl">▶</span><span>공연 참고 영상 · 이미지<br><small>영상 4 · 도면·장비 8</small></span></button>
 <div class="note">원문을 한국어로 옮긴 참고용 번역입니다. 장비명·모델명·수치는 원문 그대로 두었습니다. 해석이 갈리는 곳은 원본을 기준으로 합니다.</div>
 
 <section>
@@ -224,4 +248,4 @@ thead th{background:var(--soft)}
 </tbody></table></div>
 <p class="orig">참고: 이 도면(10/15)은 라이더 본문(10/30)보다 이전 버전으로, 영상 연결이 HDMI 기준으로 표기되어 있습니다. 라이더 본문에는 SDI 케이블(무대 → FOH)도 요청되어 있습니다.</p>
 </section>
-</main></body></html>
+</main><dialog class="refdlg" id="refdlg"><div class="rh"><b>공연 참고 영상 · 이미지</b><span>테크라이더 원본 수록</span><button type="button" id="refclose" aria-label="닫기">✕</button></div><div class="rb"><div><h3>참고 영상</h3><div class="rg vid"><a href="https://www.youtube.com/watch?v=i-6WfT8RAh4" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/i-6WfT8RAh4/hqdefault.jpg" alt="" loading="lazy"><span>▶ Studio Live</span></a><a href="https://www.youtube.com/watch?v=hm_VsGgy-lE" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/hm_VsGgy-lE/hqdefault.jpg" alt="" loading="lazy"><span>▶ Studio Live</span></a><a href="https://youtu.be/-yMEGU-Vm_M" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/-yMEGU-Vm_M/hqdefault.jpg" alt="" loading="lazy"><span>▶ Live Performance #1 — 조명 참고</span></a><a href="https://drive.google.com/file/d/1rhHw5fFKPqKyoyvJvKLMjO7-mtQnjiyX/view" target="_blank" rel="noopener"><div class="ph">▶</div><span>▶ Live Performance #1·#2 — 조명 · 영상 투사 참고 (Drive)</span></a></div></div><div><h3>무대 · 장비 참고</h3><div class="rg plans"><a href="ref/ore/plot.jpg" target="_blank" rel="noopener"><img src="ref/ore/plot.jpg" alt="스테이지 플롯 ver.2 (빨강 = 현지 준비)" loading="lazy"><span>스테이지 플롯 ver.2 (빨강 = 현지 준비)</span></a><a href="ref/ore/visual.jpg" target="_blank" rel="noopener"><img src="ref/ore/visual.jpg" alt="비주얼 시스템 — 카메라 · FOH · LED" loading="lazy"><span>비주얼 시스템 — 카메라 · FOH · LED</span></a><a href="ref/ore/pedestal.jpg" target="_blank" rel="noopener"><img src="ref/ore/pedestal.jpg" alt="받침대 도면 ×3 — W520 D430 H1050" loading="lazy"><span>받침대 도면 ×3 — W520 D430 H1050</span></a><a href="ref/ore/pedestal_photo1.jpg" target="_blank" rel="noopener"><img src="ref/ore/pedestal_photo1.jpg" alt="받침대 실물 (앞)" loading="lazy"><span>받침대 실물 (앞)</span></a><a href="ref/ore/pedestal_photo2.jpg" target="_blank" rel="noopener"><img src="ref/ore/pedestal_photo2.jpg" alt="받침대 실물 (뒤)" loading="lazy"><span>받침대 실물 (뒤)</span></a><a href="ref/ore/boomstand.jpg" target="_blank" rel="noopener"><img src="ref/ore/boomstand.jpg" alt="붐 심벌 스탠드" loading="lazy"><span>붐 심벌 스탠드</span></a><a href="ref/ore/weights.jpg" target="_blank" rel="noopener"><img src="ref/ore/weights.jpg" alt="스탠드 웨이트 (샌드백)" loading="lazy"><span>스탠드 웨이트 (샌드백)</span></a><a href="ref/ore/cart.jpg" target="_blank" rel="noopener"><img src="ref/ore/cart.jpg" alt="반입 카트 (약 70×50)" loading="lazy"><span>반입 카트 (약 70×50)</span></a></div></div><div><h3>링크</h3><ul class="rl"><li><a href="https://drive.google.com/file/d/1e8NzHCJzzuOKp4PYqGuJakPottW-0MHm/view" target="_blank" rel="noopener">받침대 도면 PDF (라이더 링크) ↗</a></li></ul></div><div class="rnote">모두 작가 테크라이더 원본에 들어 있는 자료예요. 이미지를 누르면 크게 열려요.</div></div></dialog><script>(function(){const d=document.getElementById("refdlg");document.getElementById("refopen").onclick=()=>d.showModal();document.getElementById("refclose").onclick=()=>d.close();d.addEventListener("click",e=>{if(e.target===d)d.close()});if(location.hash==="#ref")d.showModal();})();</script></body></html>
